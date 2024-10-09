@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hacker Attack Simulation</title>
+    <style>
+        #container {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+        }
+        #graphCanvas, #histogramCanvas {
+            border: 1px solid black;
+            margin: 10px;
+        }
+        #graphCanvas {
+            width: 800px;
+            height: 600px;
+        }
+        #histogramCanvas {
+            width: 300px;
+            height: 600px;
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+<body>
+    <div class="text-center">
+        <h1>Hacker Attack Simulation</h1>
+        <div class="row" style="width: 100%;">
+            <div class="col-lg-3 col-12" style="padding-bottom: 20px;">
+                <label for="numHackers">Number of Hackers (n): </label>
+                <input type="number" id="numHackers" value="25">
+            </div>
+            <div class="col-lg-3 col-12" style="padding-bottom: 20px;">
+                <label for="numServers">Number of Servers (m): </label>
+                <input type="number" id="numServers" value="25">
+            </div>
+            <div class="col-lg-3 col-12" style="padding-bottom: 20px;">
+                <label for="probability">Success Probability (p): </label>
+                <input type="number" id="probability" step="0.01" value="0.5">
+            </div>
+            <div class="col-lg-3 col-12">
+                <button type="button" class="btn btn-success" onclick="runSimulation()">Run Simulation</button>
+            </div>
+        </div>
+    </div>
+    <div id="container">
+        <canvas id="graphCanvas"></canvas>
+        <canvas id="histogramCanvas"></canvas>
+    </div>
+    <script>
+        function runSimulation() {
+            // Input values
+            var n = parseInt(document.getElementById('numHackers').value);
+            var m = parseInt(document.getElementById('numServers').value);
+            var p = parseFloat(document.getElementById('probability').value);
+
+            //Graphs
+            // Canvas per il grafico principale
+            var canvas = document.getElementById('graphCanvas');
+            var ctx = canvas.getContext('2d');
+
+            // Canvas per l'istogramma
+            var histogramCanvas = document.getElementById('histogramCanvas');
+            var histogramCtx = histogramCanvas.getContext('2d');
+
+            // Imposta le dimensioni dei canvas
+            canvas.width = 800;
+            canvas.height = 600;
+            histogramCanvas.width = 300;
+            histogramCanvas.height = 600;
+
+            // Pulisci i canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            histogramCtx.clearRect(0, 0, histogramCanvas.width, histogramCanvas.height);
+
+            // Margini
+            var margin = 50;
+
+            // Calcola xStep in modo che le etichette non si sovrappongano
+            var availableWidth = canvas.width - 2 * margin;
+            var minLabelSpacing = 20; // Spazio minimo tra le etichette
+            var maxLabels = Math.floor(availableWidth / minLabelSpacing);
+
+            var labelInterval = Math.ceil(m / maxLabels);
+            var xStep = availableWidth / m;
+
+            // Riduci la dimensione del testo se necessario
+            ctx.font = '12px Arial';
+            if (xStep < 20) {
+                ctx.font = '10px Arial';
+            }
+            if (xStep < 10) {
+                ctx.font = '8px Arial';
+            }
+
+            // Disegna l'asse dei server sul grafico principale
+            ctx.beginPath();
+            ctx.moveTo(margin, canvas.height - margin);
+            ctx.lineTo(canvas.width - margin, canvas.height - margin);
+            ctx.stroke();
+
+            // Disegna le etichette dei server
+            for (var i = 0; i <= m; i++) {
+                var x = margin + i * xStep;
+
+                // Disegna tick solo se necessario per evitare sovrapposizioni
+                if (i % labelInterval === 0 || i === m) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, canvas.height - margin - 5);
+                    ctx.lineTo(x, canvas.height - margin + 5);
+                    ctx.stroke();
+                    ctx.fillText(i, x, canvas.height - margin + 15);
+                }
+            }
+
+            // Genera colori differenti per ogni hacker
+            var colors = [];
+            for (var i = 0; i < n; i++) {
+                colors.push('hsl(' + (i * 360 / n) + ', 100%, 50%)');
+            }
+
+            // Calcola yStep per adattare le linee verticalmente
+            var maxPossibleLevel = m; // Livello massimo possibile
+            var yStep = (canvas.height - 2 * margin) / (maxPossibleLevel + 1);
+
+            // Array per memorizzare il livello raggiunto da ogni hacker
+            var levelsReached = [];
+
+            // Variabile per la media ricorsiva
+            var mean = 0;
+
+            // Simulazione per ogni hacker
+            for (var h = 0; h < n; h++) {
+                var x = margin; // Posizione x iniziale
+                var y = canvas.height - margin; // Posizione y iniziale
+                var level = 0; // Livello iniziale
+
+                ctx.strokeStyle = colors[h];
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+
+                for (var s = 1; s <= m; s++) {
+                    var rand = Math.random();
+                    if (rand <= p) {
+                        // Successo, muovi verticalmente
+                        y -= yStep; // Muovi su di yStep pixel
+                        level++; // Incrementa il livello
+                        ctx.lineTo(x, y);
+                    }
+                    // Muovi orizzontalmente al prossimo server
+                    x += xStep;
+                    ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+
+                // Aggiungi il livello raggiunto all'array
+                levelsReached.push(level);
+
+                // Calcola la media ricorsivamente
+                var k = h + 1; // Indice corrente (da 1 a n)
+                var previousMean = mean;
+                mean = previousMean + (level - previousMean) / k;
+            }
+
+            // Disegna l'istogramma allineato
+            drawAlignedHistogram(histogramCtx, levelsReached, n, m, mean, yStep);
+        }
+
+        function drawAlignedHistogram(ctx, data, totalHackers, maxLevel, mean, yStep) {
+            // Calcola la frequenza di ogni livello
+            var frequency = {};
+            for (var i = 0; i <= maxLevel; i++) {
+                frequency[i] = 0;
+            }
+            data.forEach(function(level) {
+                frequency[level]++;
+            });
+
+            // Imposta dimensioni e margini dell'istogramma
+            var canvasWidth = ctx.canvas.width;
+            var canvasHeight = ctx.canvas.height;
+            var marginTop = 50;
+            var marginBottom = 50;
+            var marginLeft = 10;
+            var marginRight = 10;
+            var histogramHeight = canvasHeight - marginTop - marginBottom;
+            var barHeight = yStep; // Allinea l'altezza delle barre con yStep
+            var barWidth = canvasWidth - marginLeft - marginRight - 60; // Riserva spazio per il testo
+
+            // Trova la frequenza massima per il ridimensionamento orizzontale
+            var maxFrequency = Math.max(...Object.values(frequency));
+
+            // Riduci la dimensione del testo se necessario
+            ctx.font = '12px Arial';
+            if (barHeight < 20) {
+                ctx.font = '10px Arial';
+            }
+            if (barHeight < 10) {
+                ctx.font = '8px Arial';
+            }
+
+            // Disegna le barre dell'istogramma allineate ai livelli del grafico principale
+            ctx.fillStyle = 'skyblue';
+            ctx.strokeStyle = 'black';
+
+            for (var i = 0; i <= maxLevel; i++) {
+                var y = canvasHeight - marginBottom - i * barHeight - barHeight;
+                var barLength = (frequency[i] / maxFrequency) * barWidth;
+                var x = marginLeft;
+
+                // Disegna la barra
+                ctx.fillRect(x, y, barLength, barHeight - 2);
+                ctx.strokeRect(x, y, barLength, barHeight - 2);
+
+                // Testo con il numero di hacker
+                var text = 'Level ' + i + ': ' + frequency[i];
+                ctx.fillStyle = 'black';
+
+                // Misura la larghezza del testo
+                var textWidth = ctx.measureText(text).width;
+
+                // Calcola la posizione del testo
+                var textX = x + barLength + 5;
+
+                // Se il testo esce fuori dal canvas, spostalo a sinistra
+                if (textX + textWidth > canvasWidth - marginRight) {
+                    textX = canvasWidth - marginRight - textWidth;
+                }
+
+                ctx.textAlign = 'left';
+                ctx.fillText(text, textX, y + barHeight / 2 + 4);
+
+                ctx.fillStyle = 'skyblue';
+            }
+
+            // Mostra la media calcolata in basso all'istogramma
+            ctx.fillStyle = 'black';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Mean: ' + mean.toFixed(2), canvasWidth / 2, canvasHeight - 10);
+        }
+    </script>
+</body>
+</html>
