@@ -303,7 +303,7 @@
             ctx.fillStyle = 'black';
             ctx.font = '24px Arial';
             ctx.textAlign = 'center';
-            var variance = deviance / maxLevel;
+            var variance = deviance / ( totalHackers );
             ctx.fillText('Variance: ' + variance.toFixed(2), canvasWidth / 2, canvasHeight - 30);
         }
     </script>
