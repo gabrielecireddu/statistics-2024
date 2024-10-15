@@ -9,16 +9,16 @@
             align-items: flex-start;
         }
         #graphCanvas {
+            border-bottom: 1px solid black;
             border-left: 1px solid black;
             border-top: 1px solid black;
-            border-bottom: 1px solid black;
             border-radius: 5%;
             border-radius: 2% 0% 0% 2%;
         }
         #histogramCanvas {
-            border-top: 1px solid black;
-            border-right: 1px solid black;
             border-bottom: 1px solid black;
+            border-right: 1px solid black;
+            border-top: 1px solid black;
             border-radius: 0% 2% 2% 0%;
         }
         #graphCanvas {
@@ -102,6 +102,7 @@
             var m = parseInt(document.getElementById('numServers').value);
             var p = parseFloat(document.getElementById('probability').value);
 
+            //Graphs
             // Canvas per il grafico principale
             var canvas = document.getElementById('graphCanvas');
             var ctx = canvas.getContext('2d');
@@ -111,10 +112,10 @@
             var histogramCtx = histogramCanvas.getContext('2d');
 
             // Imposta le dimensioni dei canvas
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-            histogramCanvas.width = histogramCanvas.clientWidth;
-            histogramCanvas.height = histogramCanvas.clientHeight;
+            canvas.width = 800;
+            canvas.height = 600;
+            histogramCanvas.width = 300;
+            histogramCanvas.height = 600;
 
             // Pulisci i canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -140,13 +141,9 @@
                 ctx.font = '8px Arial';
             }
 
-            // Calcola yStep per adattare le linee verticalmente
-            var maxPossibleLevel = m; // Livello massimo possibile (positivo o negativo)
-            var yStep = (canvas.height - 2 * margin) / (2 * maxPossibleLevel + 1);
-
             // Disegna l'asse dei server sul grafico principale
             ctx.beginPath();
-            ctx.moveTo(margin, canvas.height - margin); // Asse orizzontale al centro
+            ctx.moveTo(margin, canvas.height - margin);
             ctx.lineTo(canvas.width - margin, canvas.height - margin);
             ctx.stroke();
 
@@ -170,65 +167,56 @@
                 colors.push('hsl(' + (i * 360 / n) + ', 100%, 50%)');
             }
 
+            // Calcola yStep per adattare le linee verticalmente
+            var maxPossibleLevel = m; // Livello massimo possibile
+            var yStep = (canvas.height - 2 * margin) / (maxPossibleLevel + 1);
+
             // Array per memorizzare il livello raggiunto da ogni hacker
             var levelsReached = [];
 
             // Variabile per la media ricorsiva
             var mean = 0;
-            var delta = 0;
-            var deviance = 0;
 
-            // Simulazione per ogni hacker
+            // Simulation for each haker
             for (var h = 0; h < n; h++) {
-                var x = margin; // Posizione x iniziale
-                var y = canvas.height / 2; // Posizione y iniziale (centro verticale)
-                var level = 0; // Livello iniziale
+                var x = margin; // Starting x position
+                var y = canvas.height - margin; // Starting y position
+                var level = 0; // Starting level
                 ctx.strokeStyle = colors[h];
                 ctx.beginPath();
                 ctx.moveTo(x, y);
 
                 for (var s = 1; s <= m; s++) {
-                    // Muovi orizzontalmente al prossimo server
-                    x += xStep;
-                    ctx.lineTo(x, y);
-
                     var rand = Math.random();
                     if (rand <= p) {
-                        // Successo, muovi verso l'alto
-                        y -= yStep; // Muovi su di yStep pixel
-                        level++; // Incrementa il livello
-                    } else {
-                        // Fallimento, muovi verso il basso
-                        y += yStep; // Muovi giù di yStep pixel
-                        level--; // Decrementa il livello
+                        // Success, move vertically
+                        y -= yStep; // Move up of yStep pixel
+                        level++; // Increase the level
+                        ctx.lineTo(x, y);
                     }
+                    // Move horizzontally to he next server
+                    x += xStep;
                     ctx.lineTo(x, y);
                 }
                 ctx.stroke();
 
-                // Aggiungi il livello raggiunto all'array
+                // Add the reached level to the array
                 levelsReached.push(level);
 
-                // Calcola la media ricorsivamente
-                //var k = h + 1; // Indice corrente (da 1 a n)
-                //var previousMean = mean;
-                //mean = previousMean + (level - previousMean) / k;
-
-                var k = h + 1; // Indice corrente (da 1 a n)
-                delta = (level - mean);
-                mean += delta / k;
-                deviance += (level - mean) * delta;
-
+                // Calculate the mean recursively
+                var k = h + 1; // Corrent index (from 1 to n)
+                var previousMean = mean;
+                mean = previousMean + (level - previousMean) / k;
             }
 
-            // Disegna l'istogramma allineato
-            drawAlignedHistogram(histogramCtx, levelsReached, n, m, mean, deviance, yStep);
+            // Draw the aligned histogram
+            drawAlignedHistogram(histogramCtx, levelsReached, n, m, mean, yStep);
         }
 
-        function drawAlignedHistogram(ctx, data, totalHackers, maxLevel, mean, deviance, yStep) {
+        function drawAlignedHistogram(ctx, data, totalHackers, maxLevel, mean, yStep) {
             // Calcola la frequenza di ogni livello
             var frequency = {};
-            for (var i = -maxLevel; i <= maxLevel; i++) {
+            for (var i = 0; i <= maxLevel; i++) {
                 frequency[i] = 0;
             }
             data.forEach(function(level) {
@@ -262,36 +250,34 @@
             ctx.fillStyle = 'skyblue';
             ctx.strokeStyle = 'black';
 
-            for (var i = maxLevel; i >= -maxLevel; i--) {
-                var y = canvasHeight / 2 - (i * barHeight) - barHeight;
+            for (var i = 0; i <= maxLevel; i++) {
+                var y = canvasHeight - marginBottom - i * barHeight - barHeight;
                 var barLength = (frequency[i] / maxFrequency) * barWidth;
                 var x = marginLeft;
 
-                // Disegna la barra solo se c'è almeno un hacker che ha raggiunto quel livello
-                if (frequency[i] > 0) {
-                    ctx.fillRect(x, y, barLength, barHeight - 2);
-                    ctx.strokeRect(x, y, barLength, barHeight - 2);
+                // Disegna la barra
+                ctx.fillRect(x, y, barLength, barHeight - 2);
+                ctx.strokeRect(x, y, barLength, barHeight - 2);
 
-                    // Testo con il numero di hacker
-                    var text = 'Level ' + i + ': ' + frequency[i];
-                    ctx.fillStyle = 'black';
+                // Testo con il numero di hacker
+                var text = 'Level ' + i + ': ' + frequency[i];
+                ctx.fillStyle = 'black';
 
-                    // Misura la larghezza del testo
-                    var textWidth = ctx.measureText(text).width;
+                // Misura la larghezza del testo
+                var textWidth = ctx.measureText(text).width;
 
-                    // Calcola la posizione del testo
-                    var textX = x + barLength + 5;
+                // Calcola la posizione del testo
+                var textX = x + barLength + 5;
 
-                    // Se il testo esce fuori dal canvas, spostalo a sinistra
-                    if (textX + textWidth > canvasWidth - marginRight) {
-                        textX = canvasWidth - marginRight - textWidth;
-                    }
-
-                    ctx.textAlign = 'left';
-                    ctx.fillText(text, textX, y + barHeight / 2 + 4);
-
-                    ctx.fillStyle = 'skyblue';
+                // Se il testo esce fuori dal canvas, spostalo a sinistra
+                if (textX + textWidth > canvasWidth - marginRight) {
+                    textX = canvasWidth - marginRight - textWidth;
                 }
+
+                ctx.textAlign = 'left';
+                ctx.fillText(text, textX, y + barHeight / 2 + 4);
+
+                ctx.fillStyle = 'skyblue';
             }
 
             // Mostra la media calcolata in basso all'istogramma
@@ -299,12 +285,6 @@
             ctx.font = '24px Arial';
             ctx.textAlign = 'center';
             ctx.fillText('Mean: ' + mean.toFixed(2), canvasWidth / 2, canvasHeight - 10);
-
-            ctx.fillStyle = 'black';
-            ctx.font = '24px Arial';
-            ctx.textAlign = 'center';
-            var variance = deviance / ( totalHackers );
-            ctx.fillText('Variance: ' + variance.toFixed(2), canvasWidth / 2, canvasHeight - 30);
         }
     </script>
 </body>
