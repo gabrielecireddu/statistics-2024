@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive LaTeX</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            margin: 0;
+        }
+        h1, h2 {
+            font-size: 24px;
+        }
+        p {
+            font-size: 16px;
+        }
+        .math-container {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        /* Ridimensionamento responsive per formule */
+        @media (max-width: 768px) {
+            p {
+            font-size: 12px;
+        }
+        }
+        @media (max-width: 540px) {
+            p {
+            font-size: 10px;
+        }
+        }
+        @media (max-width: 460px) {
+            p {
+            font-size: 8px;
+        }
+        }
+        @media (max-width: 380px) {
+            p {
+            font-size: 6px;
+        }
+        }
+        @media (max-width: 318px) {
+            p {
+            font-size: 5px;
+        }
+        }
+    </style>
+</head>
+<body>
+    <div class="math-container">
+        <p>Partiamo dalla formula iniziale ricavata a lezione:</p>
+        <p>
+        $$ \text{Dev}_n = \text{Dev}_{n-1} + (n-1)\left( \bar{x}_{n-1} - \bar{x}_n \right)^2 + \left( X_n - \bar{x}_n \right)^2 $$
+        </p>
+    </div>
+
+    <div class="math-container">
+        <p>Dato che:</p>
+        <p>
+        $$ \bar{x}_n = \frac{(n-1)\bar{x}_{n-1} + X_n}{n} $$
+        </p>
+    </div>
+
+    <div class="math-container">
+        <p>Sostituendo, otteniamo:</p>
+        <p>
+        $$ \text{Dev}_n = \text{Dev}_{n-1} + (n-1)\left( \bar{x}_{n-1} - \frac{(n-1)\bar{x}_{n-1} + x_n}{n} \right)^2 + \left( x_n - \frac{(n-1)\bar{x}_{n-1} + x_n}{n} \right)^2 $$
+        </p>
+    </div>
+
+    <div class="math-container">
+        <p>Semplificando il primo termine tra parentesi:</p>
+        <p>
+        $$ \left( \bar{x}_{n-1} - \bar{x}_n \right) = \bar{x}_{n-1} - \frac{(n-1)\bar{x}_{n-1} + x_n}{n} = \frac{n\bar{x}_{n-1} - (n-1)\bar{x}_{n-1} - x_n}{n} = \frac{\bar{x}_{n-1} - x_n}{n} $$
+        </p>
+    </div>
+
+    <div class="math-container">
+        <p>Il quadrato di questa differenza diventa:</p>
+        <p>
+        $$ \left( \bar{x}_{n-1} - \bar{x}_n \right)^2 = \frac{(\bar{x}_{n-1} - x_n)^2}{n^2} $$
+        </p>
+    </div>
+
+    <p>Semplificando il secondo termine tra parentesi:</p>
+        <p>
+        $$ \left( x_n - \bar{x}_n \right) = x_n - \frac{(n-1)\bar{x}_{n-1} + x_n}{n} = \frac{nx_n - (n-1)\bar{x}_{n-1} - x_n}{n} = \frac{(n-1)(x_n - \bar{x}_{n-1})}{n} $$
+        </p>
+    </div>
+
+    <div class="math-container">
+        <p>Il quadrato di questa differenza diventa:</p>
+        <p>
+        $$ \left( x_n - \bar{x}_n \right)^2 = \frac{(n-1)^2(x_n - \bar{x}_{n-1})^2}{n^2} $$
+        </p>
+    </div>
+
+    
+    <div class="math-container">
+        <p>Quindi, otteniamo:</p>
+        <p>
+        $$ \text{Dev}_n = \text{Dev}_{n-1} + \frac{(n-1)(x_{n} - \bar{x}_{n-1})^2}{n^2} + \frac{(n-1)^2(x_n - \bar{x}_{n-1})^2}{n^2} $$
+        </p>
+    </div>
+
+    <div class="math-container">
+        <p>Sommiamo i termini con lo stesso denominatore:</p>
+        <p>
+        $$ \text{Dev}_n = \text{Dev}_{n-1} + \frac{(n-1)(x_{n} - \bar{x}_{n-1})^2+(n-1)^2(x_n - \bar{x}_{n-1})^2}{n^2}  $$
+        </p>
+    </div>
+
+    <div class="math-container">
+        <p>Semplificando:</p>
+        <p>
+            $$ \text{Dev}_n = \text{Dev}_{n-1} + \frac{(x_{n} - \bar{x}_{n-1})^2(n-1)(1+(n-1))}{n^2}  $$
+        </p>
+        <p>
+            $$ \text{Dev}_n = \text{Dev}_{n-1} + \frac{(x_{n} - \bar{x}_{n-1})^2(n-1)n}{n^2}  $$
+        </p>
+        <p>
+            $$ \text{Dev}_n = \text{Dev}_{n-1} + \frac{(n-1)}{n} (x_{n} - \bar{x}_{n-1})^2  $$
+        </p>
+    </div>
+
+    <div class="math-container">
+        <p>A questo punto dato che:</p>
+        <p>
+        $$ x_n - \bar{x}_{n-1} = \frac{(n-1)(x_n - \bar{x}_{n-1})}{n} $$
+        </p>
+    </div>
+
+    <div class="math-container">
+        <p>Semplifichiamo:</p>
+        <p>
+        $$ \frac{(n-1)}{n}(x_n - \bar{x}_{n-1})^2 = (x_n - \bar{x}_{n-1})(x_n - \bar{x}_n) $$
+        </p>
+    </div>
+
+    <div class="math-container">
+        <p>Quindi, otteniamo:</p>
+        <p>
+        $$ \text{Dev}_n = \text{Dev}_{n-1} + (x_n - \bar{x}_n)(x_n - \bar{x}_{n-1}) $$
+        </p>
+    </div>
+</body>
+</html>
