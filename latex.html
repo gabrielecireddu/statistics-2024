@@ -23,128 +23,102 @@
             overflow-x: auto;
         }
         /* Ridimensionamento responsive per formule */
-        @media (max-width: 768px) {
+        @media (max-width: 1200px) {
             p {
             font-size: 12px;
         }
         }
-        @media (max-width: 540px) {
+        @media (max-width: 880px) {
             p {
             font-size: 10px;
         }
         }
-        @media (max-width: 460px) {
+        @media (max-width: 740px) {
             p {
             font-size: 8px;
         }
         }
-        @media (max-width: 380px) {
+        @media (max-width: 600px) {
             p {
             font-size: 6px;
         }
         }
-        @media (max-width: 318px) {
+        @media (max-width: 500px) {
             p {
             font-size: 5px;
+        }
+        }
+        @media (max-width: 450px) {
+            p {
+            font-size: 4px;
+        }
+        }
+        @media (max-width: 380px) {
+            p {
+            font-size: 3px;
+        }
+        }
+        @media (max-width: 290px) {
+            p {
+            font-size: 2px;
+        }
+        }
+        @media (max-width: 240px) {
+            p {
+            font-size: 1px;
         }
         }
     </style>
 </head>
 <body>
     <div class="math-container">
-        <p>Partiamo dalla formula iniziale ricavata a lezione:</p>
-        <p>
-        $$ \text{Dev}_n = \text{Dev}_{n-1} + (n-1)\left( \bar{x}_{n-1} - \bar{x}_n \right)^2 + \left( X_n - \bar{x}_n \right)^2 $$
-        </p>
-    </div>
+        <p>Starting from the definition of deviance, we have:
 
-    <div class="math-container">
-        <p>Dato che:</p>
-        <p>
-        $$ \bar{x}_n = \frac{(n-1)\bar{x}_{n-1} + X_n}{n} $$
-        </p>
-    </div>
+            $$ \text{Dev}_n = \sum_{i=1}^{n} (x_i - \bar{x}_n)^2 = \sum_{i=1}^{n-1} (x_i - \bar{x}_n)^2 + (x_n - \bar{x}_n)^2 = \sum_{i=1}^{n-1} (x_i - \bar{x}_{n-1})^2 + (x_{n-1} - \bar{x}_n)^2 + (x_n - \bar{x}_n)^2 $$
+            
+            As we can see: 
+            
+            $$ \text{Dev}_n = \text{Dev}_{n-1} + (n-1)(x_{n-1} - \bar{x}_n)^2 + (x_n - \bar{x}_n)^2 $$
+        
+            The mean is egual to:
 
-    <div class="math-container">
-        <p>Sostituendo, otteniamo:</p>
-        <p>
-        $$ \text{Dev}_n = \text{Dev}_{n-1} + (n-1)\left( \bar{x}_{n-1} - \frac{(n-1)\bar{x}_{n-1} + x_n}{n} \right)^2 + \left( x_n - \frac{(n-1)\bar{x}_{n-1} + x_n}{n} \right)^2 $$
-        </p>
-    </div>
+            $$ \bar{x}_n = \frac{(n-1)\bar{x}_{n-1} + x_n}{n} $$
 
-    <div class="math-container">
-        <p>Semplificando il primo termine tra parentesi:</p>
-        <p>
-        $$ \left( \bar{x}_{n-1} - \bar{x}_n \right) = \bar{x}_{n-1} - \frac{(n-1)\bar{x}_{n-1} + x_n}{n} = \frac{n\bar{x}_{n-1} - (n-1)\bar{x}_{n-1} - x_n}{n} = \frac{\bar{x}_{n-1} - x_n}{n} $$
-        </p>
-    </div>
+            So:
+        
+            $$ \text{Dev}_n = \text{Dev}_{n-1} + (n-1)\left( \bar{x}_{n-1} - \frac{(n-1)\bar{x}_{n-1} + x_n}{n} \right)^2 + \left( x_n - \frac{(n-1)\bar{x}_{n-1} + x_n}{n} \right)^2 $$
+        
+            Simplifying the first term in brackets:
 
-    <div class="math-container">
-        <p>Il quadrato di questa differenza diventa:</p>
-        <p>
-        $$ \left( \bar{x}_{n-1} - \bar{x}_n \right)^2 = \frac{(\bar{x}_{n-1} - x_n)^2}{n^2} $$
-        </p>
-    </div>
+            $$ \left( \bar{x}_{n-1} - \bar{x}_n \right) = \bar{x}_{n-1} - \frac{(n-1)\bar{x}_{n-1} + x_n}{n} = \frac{n\bar{x}_{n-1} - (n-1)\bar{x}_{n-1} - x_n}{n} = \frac{\bar{x}_{n-1} - x_n}{n} $$
+        
+            $$ \Rightarrow \left( \bar{x}_{n-1} - \bar{x}_n \right)^2 = \frac{(\bar{x}_{n-1} - x_n)^2}{n^2} $$
+        
+            Simplifying the second term:
 
-    <p>Semplificando il secondo termine tra parentesi:</p>
-        <p>
-        $$ \left( x_n - \bar{x}_n \right) = x_n - \frac{(n-1)\bar{x}_{n-1} + x_n}{n} = \frac{nx_n - (n-1)\bar{x}_{n-1} - x_n}{n} = \frac{(n-1)(x_n - \bar{x}_{n-1})}{n} $$
-        </p>
-    </div>
+            $$ \left( x_n - \bar{x}_n \right) = x_n - \frac{(n-1)\bar{x}_{n-1} + x_n}{n} = \frac{nx_n - (n-1)\bar{x}_{n-1} - x_n}{n} = \frac{(n-1)(x_n - \bar{x}_{n-1})}{n} $$
+            
+            $$ \Rightarrow \left( x_n - \bar{x}_n \right)^2 = \frac{(n-1)^2(x_n - \bar{x}_{n-1})^2}{n^2} $$
+        
+            So now we have:
 
-    <div class="math-container">
-        <p>Il quadrato di questa differenza diventa:</p>
-        <p>
-        $$ \left( x_n - \bar{x}_n \right)^2 = \frac{(n-1)^2(x_n - \bar{x}_{n-1})^2}{n^2} $$
-        </p>
-    </div>
+            $$ \text{Dev}_n = \text{Dev}_{n-1} + \frac{(n-1)(x_{n} - \bar{x}_{n-1})^2}{n^2} + \frac{(n-1)^2(x_n - \bar{x}_{n-1})^2}{n^2} $$
+        
+            Let's add the terms with the same denominator:
 
-    
-    <div class="math-container">
-        <p>Quindi, otteniamo:</p>
-        <p>
-        $$ \text{Dev}_n = \text{Dev}_{n-1} + \frac{(n-1)(x_{n} - \bar{x}_{n-1})^2}{n^2} + \frac{(n-1)^2(x_n - \bar{x}_{n-1})^2}{n^2} $$
-        </p>
-    </div>
+            $$ \text{Dev}_n = \text{Dev}_{n-1} + \frac{(n-1)(x_{n} - \bar{x}_{n-1})^2+(n-1)^2(x_n - \bar{x}_{n-1})^2}{n^2}  $$
+        
+            Simplifying:
 
-    <div class="math-container">
-        <p>Sommiamo i termini con lo stesso denominatore:</p>
-        <p>
-        $$ \text{Dev}_n = \text{Dev}_{n-1} + \frac{(n-1)(x_{n} - \bar{x}_{n-1})^2+(n-1)^2(x_n - \bar{x}_{n-1})^2}{n^2}  $$
-        </p>
-    </div>
+            $$ \text{Dev}_n = \text{Dev}_{n-1} + \frac{(x_{n} - \bar{x}_{n-1})^2(n-1)(1+(n-1))}{n^2} \Rightarrow \text{Dev}_n = \text{Dev}_{n-1} + \frac{(x_{n} - \bar{x}_{n-1})^2(n-1)n}{n^2} \Rightarrow \text{Dev}_n = \text{Dev}_{n-1} + \frac{(n-1)}{n} (x_{n} - \bar{x}_{n-1})^2  $$
+            
+            At this point given that:
 
-    <div class="math-container">
-        <p>Semplificando:</p>
-        <p>
-            $$ \text{Dev}_n = \text{Dev}_{n-1} + \frac{(x_{n} - \bar{x}_{n-1})^2(n-1)(1+(n-1))}{n^2}  $$
-        </p>
-        <p>
-            $$ \text{Dev}_n = \text{Dev}_{n-1} + \frac{(x_{n} - \bar{x}_{n-1})^2(n-1)n}{n^2}  $$
-        </p>
-        <p>
-            $$ \text{Dev}_n = \text{Dev}_{n-1} + \frac{(n-1)}{n} (x_{n} - \bar{x}_{n-1})^2  $$
-        </p>
-    </div>
+            $$ x_n - \bar{x}_{n-1} = \frac{(n-1)(x_n - \bar{x}_{n-1})}{n} \Rightarrow \frac{(n-1)}{n}(x_n - \bar{x}_{n-1})^2 = (x_n - \bar{x}_{n-1})(x_n - \bar{x}_n) $$
+        
+            So here is the simplified formula:
 
-    <div class="math-container">
-        <p>A questo punto dato che:</p>
-        <p>
-        $$ x_n - \bar{x}_{n-1} = \frac{(n-1)(x_n - \bar{x}_{n-1})}{n} $$
-        </p>
-    </div>
-
-    <div class="math-container">
-        <p>Semplifichiamo:</p>
-        <p>
-        $$ \frac{(n-1)}{n}(x_n - \bar{x}_{n-1})^2 = (x_n - \bar{x}_{n-1})(x_n - \bar{x}_n) $$
-        </p>
-    </div>
-
-    <div class="math-container">
-        <p>Quindi, otteniamo:</p>
-        <p>
-        $$ \text{Dev}_n = \text{Dev}_{n-1} + (x_n - \bar{x}_n)(x_n - \bar{x}_{n-1}) $$
+            $$ \text{Dev}_n = \text{Dev}_{n-1} + (x_n - \bar{x}_n)(x_n - \bar{x}_{n-1}) $$
         </p>
     </div>
 </body>
