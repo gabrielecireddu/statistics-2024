@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive LaTeX</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            margin: 0;
+        }
+        h1, h2 {
+            font-size: 24px;
+        }
+        p {
+            font-size: 16px;
+        }
+        .math-container {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        /* Ridimensionamento responsive per formule */
+        @media (max-width: 1200px) {
+            p {
+            font-size: 12px;
+        }
+        }
+        @media (max-width: 880px) {
+            p {
+            font-size: 10px;
+        }
+        }
+        @media (max-width: 740px) {
+            p {
+            font-size: 8px;
+        }
+        }
+        @media (max-width: 600px) {
+            p {
+            font-size: 6px;
+        }
+        }
+        @media (max-width: 500px) {
+            p {
+            font-size: 5px;
+        }
+        }
+        @media (max-width: 450px) {
+            p {
+            font-size: 4px;
+        }
+        }
+        @media (max-width: 380px) {
+            p {
+            font-size: 3px;
+        }
+        }
+        @media (max-width: 290px) {
+            p {
+            font-size: 2px;
+        }
+        }
+        @media (max-width: 240px) {
+            p {
+            font-size: 1px;
+        }
+        }
+    </style>
+</head>
+<body>
+    <div class="math-container">
+        <p>To formally illustrate why the median minimizes the sum of absolute deviations \( \sum_{i=1}^{N} |x_i - c| \) with respect to a generic value \( c \), we proceed as follows:
+
+            $$ S(c) = \sum_{i=1}^{N} |x_i - c| $$
+            
+            We want to find \( c \) such that \( S(c) \) is minimized.
+            
+            Let \( X \) be a random variable representing the values of the observations \( x_i \). We can analyze the expected value \( \mathbb{E}[|X - c|] \). We take the derivative with respect to \( c \):
+            
+            $$ \frac{d}{dc}\mathbb{E}[|X - c|] = \mathbb{E}\left[\frac{d}{dc}|X - c|\right] = \mathbb{E}[-\operatorname{sgn}(X - c)], $$
+            
+            where \( \operatorname{sgn}(X - c) \) is the sign function, taking values:
+            
+            $$ -1 \Leftrightarrow ( X < c ), $$
+            $$ 0 \Leftrightarrow ( X = c ), $$
+            $$ 1 \Leftrightarrow ( X > c ). $$
+            
+            We can express the expected value in terms of probabilities:
+            
+            $$ \frac{d}{dc}\mathbb{E}[|X - c|] = P(X < c) - P(X > c), $$
+            
+            where \( P(X < c) \) is the probability that \( X \) is less than \( c \) and \( P(X > c) \) is the probability that \( X \) is greater than \( c \).
+            
+            By the normalization properties of probability, we know:
+            
+            $$ P(X > c) = 1 - P(X < c). $$
+            
+            Substituting this, we get:
+            
+            $$ \frac{d}{dc}\mathbb{E}[|X - c|] = P(X < c) - (1 - P(X < c)) = 2P(X < c) - 1. $$
+            
+            For the derivative to be zero (which corresponds to a minimum or maximum point), it must hold that:
+            
+            $$ 2P(X < c) - 1 = 0 \Rightarrow P(X < c) = \frac{1}{2}. $$
+            
+            This implies that \( c \) must be such that half of the observations are below \( c \) and half are above, meaning \( c \) is the median of the dataset.
+            
+            We have thus proven that the median \( Me \) minimizes the sum of absolute deviations:
+            
+            $$ \sum_{i=1}^{N} |x_i - Me| \leq \sum_{i=1}^{N} |x_i - c| \quad \forall c. $$
+            
+            This property arises because, at the point \( c \) equal to the median, the deviations from the values above and below \( c \) balance out, making the sum of absolute deviations minimal.
+        </p>
+    </div>
+</body>
+</html>
