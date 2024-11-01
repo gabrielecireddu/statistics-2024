@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive LaTeX</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            margin: 0;
+        }
+        h1, h2 {
+            font-size: 24px;
+        }
+        p {
+            font-size: 16px;
+        }
+        .math-container {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        /* Ridimensionamento responsive per formule */
+        @media (max-width: 1200px) {
+            p {
+            font-size: 12px;
+        }
+        }
+        @media (max-width: 880px) {
+            p {
+            font-size: 10px;
+        }
+        }
+        @media (max-width: 740px) {
+            p {
+            font-size: 8px;
+        }
+        }
+        @media (max-width: 600px) {
+            p {
+            font-size: 6px;
+        }
+        }
+        @media (max-width: 500px) {
+            p {
+            font-size: 5px;
+        }
+        }
+        @media (max-width: 450px) {
+            p {
+            font-size: 4px;
+        }
+        }
+        @media (max-width: 380px) {
+            p {
+            font-size: 3px;
+        }
+        }
+        @media (max-width: 290px) {
+            p {
+            font-size: 2px;
+        }
+        }
+        @media (max-width: 240px) {
+            p {
+            font-size: 1px;
+        }
+        }
+    </style>
+</head>
+<body>
+    <div class="math-container">
+        <p>
+            In statistics, the concept of independence extends to random variables and their distributions. Let's explore this by defining independence using different types of distributions: univariate, bivariate, marginal, and conditional.
+            <br>Two random variables \( X \) and \( Y \) are said to be independent if the realization (value) of one variable does not affect the probability distribution of the other. Formally, \( X \) and \( Y \) are independent if:
+            $$
+            P(X = x, Y = y) = P(X = x) \cdot P(Y = y)
+            $$
+            for all values \( x \) and \( y \). This implies that the joint probability distribution is the product of the marginal distributions.
+
+            
+            $$ \textbf{Univariate Distributions:} \\ $$
+            \textbf{Marginal Distributions:} \\
+            A univariate distribution deals with a single random variable. It describes the probability of different outcomes for one variable. If we denote a random variable by \( X \), its univariate probability distribution is \( P(X) \) or the probability density function (PDF) \( f_X(x) \) in the continuous case. This does not directly address independence but serves as the building block for more complex distributions.
+            
+            $$ \textbf{Bivariate Distributions:} \\ $$
+            \textbf{Marginal Distributions:} \\
+            A bivariate distribution describes the probabilities of outcomes for two random variables simultaneously, say \( X \) and \( Y \). The joint distribution \( P(X, Y) \) (or \( f_{X, Y}(x, y) \) for continuous variables) tells us the likelihood of the pair \( (X, Y) \) taking specific values.
+
+            For \( X \) and \( Y \) to be independent, the joint distribution must be:
+            $$
+            P(X = x, Y = y) = P(X = x) \cdot P(Y = y) \quad \text{for all } x \text{ and } y.
+            $$
+            In terms of probability density functions for continuous variables, \( f_{X, Y}(x, y) \) must satisfy:
+            $$
+            f_{X, Y}(x, y) = f_X(x) \cdot f_Y(y)
+            $$
+            for independence.
+
+            
+            $$ \textbf{Marginal Distributions:} \\ $$
+            The marginal distribution of a random variable \( X \) in a joint distribution \( P(X, Y) \) is the probability distribution of \( X \) regardless of the value of \( Y \). It is obtained by summing (or integrating) over the possible values of \( Y \):
+            $$
+            P(X = x) = \sum_y P(X = x, Y = y) \quad \text{(discrete)}
+            $$
+            $$
+            f_X(x) = \int f_{X, Y}(x, y) \, dy \quad \text{(continuous)}
+            $$
+            If \( X \) and \( Y \) are independent, then \( f_{X, Y}(x, y) = f_X(x) \cdot f_Y(y) \), which means knowing \( Y \) does not change the marginal distribution of \( X \).
+
+            $$ \textbf{Conditional Distributions:} \\ $$
+            \textbf{Marginal Distributions:} \\
+            A conditional distribution \( P(X \mid Y) \) gives the probability distribution of \( X \) given that \( Y \) has occurred. It is defined as:
+            $$
+            P(X = x \mid Y = y) = \frac{P(X = x, Y = y)}{P(Y = y)} \quad \text{(discrete)}
+            $$
+            $$
+            f_{X \mid Y}(x \mid y) = \frac{f_{X, Y}(x, y)}{f_Y(y)} \quad \text{(continuous)}
+            $$
+            If \( X \) and \( Y \) are independent, then:
+            $$
+            P(X \mid Y) = P(X) \quad \text{and} \quad f_{X \mid Y}(x \mid y) = f_X(x)
+            $$
+            This indicates that the occurrence of \( Y \) does not affect the distribution of \( X \), reinforcing the idea of independence.
+
+        </p>
+    </div>
+</body>
+</html>
