@@ -51,11 +51,11 @@
         <div class="row" style="width: 100%;">
             <div class="col-lg-3 col-6" style="padding-bottom: 20px;">
                 <label for="numHackers">Number of Hackers (n): </label>
-                <input class="input" type="number" id="numHackers" value="25">
+                <input class="input" type="number" id="numHackers" value="200">
             </div>
             <div class="col-lg-3 col-6" style="padding-bottom: 20px;">
                 <label for="numServers">Number of Servers (m): </label>
-                <input class="input" type="number" id="numServers" value="25">
+                <input class="input" type="number" id="numServers" value="200">
             </div>
             <div class="col-lg-3 col-6" style="padding-bottom: 20px;">
                 <label for="probability">Success Probability (p): </label>
@@ -63,7 +63,7 @@
             </div>
             <div class="col-lg-3 col-6" style="padding-bottom: 20px;">
                 <label for="relPoint">Relative point (r): </label>
-                <input class="input" type="number" id="relPoint" value="10">
+                <input class="input" type="number" id="relPoint" value="100">
             </div>
             <div class="col-lg-3 col-6" style="padding-bottom: 20px;">
                 <button type="button" class="btn btn-success" onclick="runSimulation()">Run Simulation</button>
@@ -287,17 +287,6 @@
                     ctx.fillRect(x, y, barLength, barHeight);
                     ctx.strokeRect(x, y, barLength, barHeight);
 
-                    // Testo con il numero di hacker
-                    var text = frequency[i];
-                    ctx.fillStyle = 'black';
-
-                    // Posiziona il testo alla fine della barra
-                    var textX = x + barLength + 5;
-                    var textY = y + barHeight / 2 + 4;
-
-                    ctx.textAlign = 'left';
-                    ctx.fillText(text, textX, textY);
-
                     ctx.fillStyle = 'skyblue';
                 }
             }
@@ -341,17 +330,6 @@
                 if (frequency[i] > 0) {
                     ctx.fillRect(x, y, barLength, barHeight);
                     ctx.strokeRect(x, y, barLength, barHeight);
-
-                    // Testo con il numero di hacker
-                    var text = frequency[i];
-                    ctx.fillStyle = 'black';
-
-                    // Posiziona il testo alla fine della barra
-                    var textX = x + barLength + 5;
-                    var textY = y + barHeight / 2 + 4;
-
-                    ctx.textAlign = 'left';
-                    ctx.fillText(text, textX, textY);
 
                     ctx.fillStyle = 'red';
                 }

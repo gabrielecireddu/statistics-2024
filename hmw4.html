@@ -120,18 +120,18 @@
 
             // Calcola yStep
             if (p == 0.3 || p == 0.7){
-                var maxPossibleLevel = Math.floor(m / 17);; // Livello massimo possibile (positivo o negativo)
+                var maxPossibleLevel = Math.floor(m / 17); // Livello massimo possibile (positivo o negativo)
             } else if (p == 0.2 || p == 0.8){
-                var maxPossibleLevel = Math.floor(m / 13);; // Livello massimo possibile (positivo o negativo)
+                var maxPossibleLevel = Math.floor(m / 13);
             }else if (p == 0.1 || p == 0.9){
-                var maxPossibleLevel = Math.floor(m / 11);; // Livello massimo possibile (positivo o negativo)
+                var maxPossibleLevel = Math.floor(m / 11);
             }else if (p == 0 || p == 1){
-                var maxPossibleLevel = Math.floor(m / 10);; // Livello massimo possibile (positivo o negativo)
+                var maxPossibleLevel = Math.floor(m / 10);
             }else if (p == 0.4 || p == 0.6){
-                var maxPossibleLevel = Math.floor(m / 25);; // Livello massimo possibile (positivo o negativo)
+                var maxPossibleLevel = Math.floor(m / 25);
             }
             else {
-                var maxPossibleLevel = Math.floor(m / 40);; // Livello massimo possibile (positivo o negativo)
+                var maxPossibleLevel = Math.floor(m / 40);
             }
             var yStep = (plotHeight / (2 * maxPossibleLevel + 1)) * (1 / Math.sqrt(maxPossibleLevel + 1));
 

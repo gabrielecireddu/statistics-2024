@@ -173,13 +173,13 @@ for (var h = 0; h < n; h++) {
         // Move horizontally to the next server
         x += xStep;
 
+        ctx.lineTo(x, y);
+
         var rand = Math.random();
         if (rand <= p) {
             // Success, move up
             y -= yStep; // Move up yStep pixels
             level++; // Increment level
-        } else {
-            // No change in y and level
         }
 
         ctx.lineTo(x, y);
