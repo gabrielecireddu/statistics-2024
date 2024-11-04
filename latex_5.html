@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cauchy-Schwarz Inequality Proof</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            margin: 0;
+        }
+        h1, h2 {
+            font-size: 24px;
+        }
+        p {
+            font-size: 16px;
+        }
+        .math-container {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        /* Responsive resizing for formulas */
+        @media (max-width: 1200px) {
+            p {
+            font-size: 12px;
+        }
+        }
+        @media (max-width: 880px) {
+            p {
+            font-size: 10px;
+        }
+        }
+        @media (max-width: 740px) {
+            p {
+            font-size: 8px;
+        }
+        }
+        @media (max-width: 600px) {
+            p {
+            font-size: 6px;
+        }
+        }
+        @media (max-width: 500px) {
+            p {
+            font-size: 5px;
+        }
+        }
+        @media (max-width: 450px) {
+            p {
+            font-size: 4px;
+        }
+        }
+        @media (max-width: 380px) {
+            p {
+            font-size: 3px;
+        }
+        }
+        @media (max-width: 290px) {
+            p {
+            font-size: 2px;
+        }
+        }
+        @media (max-width: 240px) {
+            p {
+            font-size: 1px;
+        }
+        }
+    </style>
+</head>
+<body>
+    <div class="math-container">
+        <p>
+            <h1>Proof of the Cauchy-Schwarz Inequality</h1>
+            The Cauchy-Schwarz inequality states that for any sequences of real numbers \( \{a_i\} \) and \( \{b_i\} \), the following holds:
+            $$
+            \left( \sum_{i=1}^{n} a_i b_i \right)^2 \leq \left( \sum_{i=1}^{n} a_i^2 \right) \left( \sum_{i=1}^{n} b_i^2 \right)
+            $$
+            <br><br>
+            <strong>Cauchy-Schwarz Inequality Proof</strong>
+            <br><br>
+            <strong>Consider the Non-negative Quadratic Form:</strong> Define a new variable \( x \) and consider the expression:
+            $$
+            f(x) = \sum_{i=1}^{n} (a_i x + b_i)^2
+            $$
+            This function \( f(x) \) is a quadratic function of \( x \) and is always non-negative, since it is a sum of squares.
+            <br><br>
+            <strong>Expand the Function:</strong>
+            $$
+            \begin{align*}
+            f(x) &= \sum_{i=1}^{n} \left( a_i^2 x^2 + 2 a_i b_i x + b_i^2 \right) \\
+            &= \left( \sum_{i=1}^{n} a_i^2 \right) x^2 + 2 \left( \sum_{i=1}^{n} a_i b_i \right) x + \sum_{i=1}^{n} b_i^2
+            \end{align*}
+            $$
+            <br>
+            <strong>Use the Condition for Non-negativity:</strong> Since \( f(x) \geq 0 \) for all \( x \), the discriminant of this quadratic must be non-positive:
+            $$
+            D = \left( 2 \sum_{i=1}^{n} a_i b_i \right)^2 - 4 \left( \sum_{i=1}^{n} a_i^2 \right) \left( \sum_{i=1}^{n} b_i^2 \right) \leq 0
+            $$
+            <br>
+            <strong>Set up the Discriminant Inequality:</strong>
+            $$
+            \left( 2 \sum_{i=1}^{n} a_i b_i \right)^2 \leq 4 \left( \sum_{i=1}^{n} a_i^2 \right) \left( \sum_{i=1}^{n} b_i^2 \right)
+            $$
+            <br>
+            <strong>Divide by 4:</strong>
+            $$
+            \left( \sum_{i=1}^{n} a_i b_i \right)^2 \leq \left( \sum_{i=1}^{n} a_i^2 \right) \left( \sum_{i=1}^{n} b_i^2 \right)
+            $$
+            <br>
+            This completes the proof of the Cauchy-Schwarz inequality.
+
+            <h1>Understanding Independence and Uncorrelation: A Deep Dive into Their Differences and Measures</h1>
+            <em>By [Your Name], [Date]</em>
+            <br><br>
+            In the fields of statistics and probability theory, the concepts of <strong>independence</strong> and <strong>uncorrelation</strong> often emerge as fundamental yet sometimes misunderstood notions. While they may appear similar at first glance, they represent distinct relationships between random variables. This article aims to clarify these concepts, highlight their differences, and explore the measures used to quantify them.
+            <br><br>
+            <h2>Independence: The Absence of Influence</h2>
+            <strong>Definition</strong>: Two random variables \( X \) and \( Y \) are said to be <em>independent</em> if the occurrence of any event related to \( X \) does not affect the probability distribution of \( Y \), and vice versa. Mathematically, this is expressed as:
+            $$
+            P(X = x, Y = y) = P(X = x) \cdot P(Y = y)
+            $$
+            for all values \( x \) and \( y \). In terms of probability density functions (pdf) for continuous variables:
+            $$
+            f_{X,Y}(x, y) = f_X(x) \cdot f_Y(y)
+            $$
+            <strong>Interpretation</strong>: Independence implies a complete lack of association between \( X \) and \( Y \). Knowing the value of one provides no information about the other.
+            <br><br>
+            <h2>Uncorrelation: Zero Covariance</h2>
+            <strong>Definition</strong>: Two random variables \( X \) and \( Y \) are <em>uncorrelated</em> if their covariance is zero:
+            $$
+            \text{Cov}(X, Y) = E[(X - \mu_X)(Y - \mu_Y)] = 0
+            $$
+            where \( \mu_X \) and \( \mu_Y \) are the means of \( X \) and \( Y \), respectively.
+            <br>
+            <strong>Interpretation</strong>: Uncorrelation indicates that there is no linear relationship between \( X \) and \( Y \). The Pearson correlation coefficient \( \rho_{X,Y} \) is zero:
+            $$
+            \rho_{X,Y} = \frac{\text{Cov}(X, Y)}{\sigma_X \sigma_Y} = 0
+            $$
+            where \( \sigma_X \) and \( \sigma_Y \) are the standard deviations of \( X \) and \( Y \).
+            <br><br>
+            <h2>Independence vs. Uncorrelation: The Crucial Differences</h2>
+            While independence and uncorrelation both suggest a form of "non-association" between variables, they are not equivalent.
+            <br><br>
+            <h3>Independence Implies Uncorrelation</h3>
+            If \( X \) and \( Y \) are independent, then they are uncorrelated. This is because:
+            $$
+            \text{Cov}(X, Y) = E[XY] - E[X]E[Y]
+            $$
+            For independent variables:
+            $$
+            E[XY] = E[X]E[Y]
+            $$
+            Therefore:
+            $$
+            \text{Cov}(X, Y) = E[X]E[Y] - E[X]E[Y] = 0
+            $$
+            <h3>Uncorrelation Does Not Imply Independence</h3>
+            However, the converse is not necessarily true. Variables can be uncorrelated but not independent. Uncorrelation only indicates the absence of a linear relationship, but nonlinear dependencies may still exist.
+            <br>
+            <strong>Example</strong>: Let \( X \) be a standard normal random variable, and let \( Y = X^2 \). Then:
+            \[
+            \begin{align*}
+            &E[X] = 0 \\
+            &E[Y] = E[X^2] = 1 \\
+            &\text{Cov}(X, Y) = E[X \cdot X^2] - E[X]E[Y] = E[X^3] - 0 = 0 \quad (\text{since the third moment of a standard normal distribution is zero})
+            \end{align*}
+            \]
+            Thus, \( X \) and \( Y \) are uncorrelated. However, they are clearly dependent because knowing \( X \) provides information about \( Y \) (since \( Y \) is determined by \( X \)).
+            <br><br>
+            <h2>Measuring Dependence: Beyond Covariance</h2>
+            Understanding the relationship between variables requires appropriate measures.
+            <br><br>
+            <h3>Covariance and Correlation</h3>
+            - <strong>Covariance</strong> quantifies the direction of a linear relationship.
+            <br>
+            - The <strong>correlation coefficient</strong> standardizes covariance, providing a dimensionless measure between -1 and 1.
+            <br>
+            However, both measures only capture linear dependencies.
+            <br><br>
+            <h3>Mutual Information</h3>
+            <strong>Definition</strong>: Mutual information measures the reduction in uncertainty of one variable given knowledge of another. It is defined as:
+            $$
+            I(X; Y) = \int \int f_{X,Y}(x, y) \log \left( \frac{f_{X,Y}(x, y)}{f_X(x) f_Y(y)} \right) dx dy
+            $$
+            <strong>Interpretation</strong>: Mutual information captures all types of dependencies (linear and nonlinear). It is zero if and only if \( X \) and \( Y \) are independent.
+            <br><br>
+        </p>
+    </div>
+</body>
+</html>

@@ -158,7 +158,7 @@ function runSimulation1() {
     }
 
     // Estimate max possible level
-    var maxPossibleLevel = m;
+    var maxPossibleLevel = Math.floor(m * (p + 0.2));
 
     var yStep = plotHeight / (maxPossibleLevel + 1);
 
@@ -204,6 +204,8 @@ function runSimulation1() {
     var deltaAtR = 0;
     var devianceAtR = 0;
 
+    var maxLevelReached = 0;
+
     // Simulation for each hacker
     for (var h = 0; h < n; h++) {
         var x = marginLeft; // Initial x position
@@ -229,6 +231,10 @@ function runSimulation1() {
             }
 
             ctx.lineTo(x, y);
+
+            if (level > maxLevelReached){
+                maxLevelReached = level;
+            }
 
             // Store the level at point r
             if (s === r) {
@@ -275,6 +281,8 @@ function runSimulation1() {
     ctx.fillText('Relative Mean: ' + meanAtR.toFixed(2), marginLeft + plotWidth + 20, marginTop + plotHeight + 15);
     var varianceAtR = devianceAtR / n;
     ctx.fillText('Relative Variance: ' + varianceAtR.toFixed(2), marginLeft + plotWidth + 20, marginTop + plotHeight + 30);
+
+    ctx.fillText('Max Level Reached: ' + maxLevelReached, marginLeft + plotWidth + 20, marginTop);
 }
 
 function drawAlignedHistogram1(ctx, data, totalHackers, maxLevel, yStep, xStart, yStart, histogramWidth, plotHeight) {
@@ -408,7 +416,7 @@ function runSimulation2() {
     }
 
     // Calcola yStep
-    var maxPossibleLevel = m; // Livello massimo possibile (positivo o negativo)
+    var maxPossibleLevel = m;
     var yStep = plotHeight / (2 * maxPossibleLevel + 1);
 
     // Disegna l'asse dei server sul grafico principale
@@ -460,6 +468,9 @@ function runSimulation2() {
     var deltaAtR = 0;
     var devianceAtR = 0;
 
+    var maxLevelReached = 0;
+            var minLevelReached = 0;
+
     // Simulazione per ogni hacker
     for (var h = 0; h < n; h++) {
         var x = marginLeft; // Posizione x iniziale
@@ -491,6 +502,13 @@ function runSimulation2() {
             if (s === r) {
                 levelAtR = level;
                 relativeLevelsReached.push(levelAtR);
+            }
+
+            if (level > maxLevelReached){
+                maxLevelReached = level;
+            }
+            if (level < minLevelReached){
+                minLevelReached = level;
             }
 
             ctx.lineTo(x, y);
@@ -529,12 +547,16 @@ function runSimulation2() {
     var variance = deviance / n;
     ctx.fillText('Total Variance: ' + variance.toFixed(2), marginLeft + plotWidth + 20, marginTop - 15);
 
+    ctx.fillText('Max Level Reached: ' + maxLevelReached, marginLeft + plotWidth + 20, marginTop);
+
     ctx.fillStyle = 'black';
     ctx.font = '16px Arial';
     ctx.textAlign = 'left';
     ctx.fillText('Relative Mean: ' + meanAtR.toFixed(2), marginLeft + plotWidth + 20, marginTop + plotHeight + 15);
     var varianceAtR = devianceAtR / n;
     ctx.fillText('Relative Variance: ' + varianceAtR.toFixed(2), marginLeft + plotWidth + 20, marginTop + plotHeight + 30);
+
+    ctx.fillText('Min Level Reached: ' + minLevelReached, marginLeft + plotWidth + 20, marginTop + plotHeight);
 }
 
 function drawAlignedHistogram2(ctx, data, totalHackers, maxLevel, yStep, xStart, yStart, histogramWidth, plotHeight) {
