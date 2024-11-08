@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Probability Histogram Generator</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <!-- Include the Chart.js library (UMD build) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            margin: 0;
+        }
+        h1, h2 {
+            font-size: 24px;
+        }
+        p {
+            font-size: 16px;
+        }
+        .input{
+            width: 80px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 5px;
+        }
+        .button{
+            width: 200px;
+            border-radius: 10px;
+            background-color: green;
+            color: white;
+        }
+        .button:hover{
+            background-color: white;
+            color: green;
+            cursor: pointer;
+        }
+        .chart-container {
+            width: 800px;
+            margin: 0 auto;
+        }
+        .probabilities-form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .probabilities-form label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #invalidMessage {
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="text-align: center;">
+        <div style="padding-top: 20px;">
+            <label for="numIntervals"><strong># probability [ 0 - 1 ] intervals: </strong></label>
+            <input class="input" type="number" id="numIntervals" value="5">
+            <button class="button" id="generateProbabilities">Generate probabilities</button>
+        </div>
+        <div class="probabilities" style="padding-top: 20px;">
+        </div>
+        <div class="chart-container" style="padding-top: 20px;">
+            <canvas id="histogramChart"></canvas>
+        </div>
+    </div>
+</body>
+
+<script>
+    window.onload = function() {
+        var histogramChart; // Declare the chart instance variable
+
+        document.getElementById("generateProbabilities").onclick = generate;
+
+        function generate(){
+            var numIntervals = parseInt(document.getElementById('numIntervals').value);
+            var probabilitiesDiv = document.querySelector('.probabilities');
+            probabilitiesDiv.innerHTML = ''; // Clear previous content
+
+            var randomNumbers = [];
+            for (var i = 0; i < numIntervals; i++) {
+                randomNumbers.push(Math.random());
+            }
+
+            var sum = randomNumbers.reduce(function(a,b){ return a+b; }, 0);
+
+            var probabilities = randomNumbers.map(function(n){
+                return n / sum;
+            });
+
+            // Create a form to hold the inputs
+            var form = document.createElement('form');
+            form.classList.add('probabilities-form');
+
+            // Create an element to display the 'Invalid values' message
+            var invalidMessage = document.createElement('p');
+            invalidMessage.id = 'invalidMessage';
+            invalidMessage.style.color = 'red';
+            invalidMessage.innerHTML = ''; // Empty initially
+
+            // Append the message to the form
+            form.appendChild(invalidMessage);
+
+            for (var i = 0; i < numIntervals; i++) {
+                var label = document.createElement('label');
+                label.innerHTML = 'p' + (i+1) + ': ';
+
+                var input = document.createElement('input');
+                input.type = 'number';
+                input.step = 'any';
+                input.value = probabilities[i].toFixed(3);
+                input.min = '0';
+                input.max = '1';
+                input.classList.add('input');
+
+                // Add an event listener to check the sum when the value changes
+                input.oninput = checkSum;
+
+                // Attach the input to the label
+                label.appendChild(input);
+
+                // Append the label to the form
+                form.appendChild(label);
+            }
+
+            // Create '# attempts' label and input
+            var attemptsLabel = document.createElement('label');
+            attemptsLabel.innerHTML = '<strong># attempts: </strong>';
+
+            var attemptsInput = document.createElement('input');
+            attemptsInput.type = 'number';
+            attemptsInput.value = '1000';
+            attemptsInput.classList.add('input');
+
+            attemptsLabel.appendChild(attemptsInput);
+            form.appendChild(attemptsLabel);
+
+            // Create the 'Generate Histogram' button
+            var generateHistogramButton = document.createElement('button');
+            generateHistogramButton.type = 'button';
+            generateHistogramButton.id = 'generateHistogram';
+            generateHistogramButton.classList.add('button');
+            generateHistogramButton.style.marginTop = '20px';
+            generateHistogramButton.innerHTML = 'Generate Histogram';
+            generateHistogramButton.disabled = false; // Initially enabled
+
+            // Append the button to the form
+            form.appendChild(generateHistogramButton);
+
+            // Append the form to the probabilities div
+            probabilitiesDiv.appendChild(form);
+
+            // Event listener for 'Generate Histogram' button
+            generateHistogramButton.onclick = function() {
+                generateHistogram();
+            };
+
+            function checkSum() {
+                // Get all input values
+                var inputs = form.querySelectorAll('input[type="number"]');
+                var total = 0;
+                var valid = true;
+                for (var i = 0; i < numIntervals; i++) {
+                    var val = parseFloat(inputs[i].value);
+                    if (isNaN(val) || val < 0 || val > 1) {
+                        valid = false;
+                        break;
+                    }
+                    total += val;
+                }
+                // Check if total is approximately 1 (allowing for small rounding errors)
+                if (!valid || Math.abs(total - 1) > 0.0001) {
+                    invalidMessage.innerHTML = 'Invalid values';
+                    generateHistogramButton.disabled = true;
+                } else {
+                    invalidMessage.innerHTML = '';
+                    generateHistogramButton.disabled = false;
+                }
+            }
+
+            // Initial check to handle cases where inputs are modified before first check
+            checkSum();
+
+            function generateHistogram() {
+                // Get the number of attempts
+                var attempts = parseInt(attemptsInput.value);
+                if (isNaN(attempts) || attempts <= 0) {
+                    alert('Please enter a valid number of attempts.');
+                    return;
+                }
+
+                // Get updated probabilities
+                var inputs = form.querySelectorAll('input[type="number"]');
+                var probs = [];
+                for (var i = 0; i < numIntervals; i++) {
+                    var val = parseFloat(inputs[i].value);
+                    probs.push(val);
+                }
+
+                // Create cumulative distribution
+                var cumulativeProbs = [];
+                var cumulativeSum = 0;
+                for (var i = 0; i < probs.length; i++) {
+                    cumulativeSum += probs[i];
+                    cumulativeProbs.push(cumulativeSum);
+                }
+
+                // Perform the simulation
+                var counts = new Array(numIntervals).fill(0);
+                for (var i = 0; i < attempts; i++) {
+                    var rand = Math.random();
+                    for (var j = 0; j < cumulativeProbs.length; j++) {
+                        if (rand <= cumulativeProbs[j]) {
+                            counts[j]++;
+                            break;
+                        }
+                    }
+                }
+
+                // Prepare data for the histogram
+                var labels = [];
+                for (var i = 0; i < numIntervals; i++) {
+                    labels.push('p' + (i + 1));
+                }
+
+                // Destroy previous chart instance if it exists
+                if (histogramChart) {
+                    histogramChart.destroy();
+                }
+
+                // Get the context of the canvas element
+                var ctx = document.getElementById('histogramChart').getContext('2d');
+
+                // Create the histogram chart
+                histogramChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Counts',
+                            data: counts,
+                            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Frequency'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Intervals'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
+</script>
+</html>
