@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive LaTeX</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            margin: 0;
+        }
+        h1, h2 {
+            font-size: 24px;
+        }
+        p {
+            font-size: 16px;
+        }
+        .math-container {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        /* Ridimensionamento responsive per formule */
+        @media (max-width: 1200px) {
+            p {
+            font-size: 12px;
+        }
+        }
+        @media (max-width: 880px) {
+            p {
+            font-size: 10px;
+        }
+        }
+        @media (max-width: 740px) {
+            p {
+            font-size: 8px;
+        }
+        }
+        @media (max-width: 600px) {
+            p {
+            font-size: 6px;
+        }
+        }
+        @media (max-width: 500px) {
+            p {
+            font-size: 5px;
+        }
+        }
+        @media (max-width: 450px) {
+            p {
+            font-size: 4px;
+        }
+        }
+        @media (max-width: 380px) {
+            p {
+            font-size: 3px;
+        }
+        }
+        @media (max-width: 290px) {
+            p {
+            font-size: 2px;
+        }
+        }
+        @media (max-width: 240px) {
+            p {
+            font-size: 1px;
+        }
+        }
+    </style>
+</head>
+<body>
+    <div class="math-container">
+        <p>
+            The fundamental theorem of calculus (FTC) establishes a profound connection between differentiation and integration. It states that if a function \( f \) is continuous on an interval \([a, b]\), then:
+
+            <br><br>1. FTC Part 1:<br>The function \( F \) defined by the integral of \( f \) from \( a \) to \( x \),
+               \[
+               F(x) = \int_{a}^{x} f(t) \, dt,
+               \]
+               is differentiable on \((a, b)\), and its derivative is the original function \( f \):
+               \[
+               F'(x) = f(x).
+               \]
+
+            <br>2. FTC Part 2:<br>If \( F \) is any antiderivative of \( f \) on \([a, b]\) (meaning \( F' = f \)), then the definite integral of \( f \) from \( a \) to \( b \) is given by:
+               \[
+               \int_{a}^{b} f(t) \, dt = F(b) - F(a).
+               \]
+
+            In probability theory, particularly in the study of continuous random variables, we define:
+
+            <br><br>- Probability Density Function (pdf): A function \( f(x) \) that describes the relative likelihood of a random variable \( X \) taking on a particular value \( x \). It satisfies \( f(x) \geq 0 \) and \(\int_{-\infty}^{\infty} f(x) \, dx = 1\).
+
+            <br><br>- Cumulative Distribution Function (CDF): A function \( F(x) \) that gives the probability that \( X \) is less than or equal to \( x \):
+              \[
+              F(x) = \mathbb{P}(X \leq x) = \int_{-\infty}^{x} f(t) \, dt.
+              \]
+
+            Connecting FTC to Density Functions and CDFs:
+
+            <br><br>The relationship between the pdf and the CDF mirrors the relationship described in the FTC:
+
+            <br><br>1. Integration of pdf to get CDF: By integrating the pdf \( f(t) \) from \( -\infty \) to \( x \), we obtain the CDF \( F(x) \):
+               \[
+               F(x) = \int_{-\infty}^{x} f(t) \, dt.
+               \]
+               This is analogous to defining \( F(x) \) as the integral of \( f \), as in the FTC Part 1.
+
+               <br><br>2. Differentiation of CDF to get pdf: If the pdf \( f(x) \) is continuous, then by the FTC, the derivative of the CDF is the pdf:
+               \[
+               F'(x) = \frac{d}{dx} F(x) = f(x).
+               \]
+               This demonstrates that the rate of change of the cumulative probability up to \( x \) is given by the density at \( x \).
+        </p>
+    </div>
+</body>
+</html>
