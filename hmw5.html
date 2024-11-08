@@ -55,22 +55,22 @@
     <h1>SDE Simulator</h1>
     <div class="col-lg-3 col-12">
         <label>
-            <input class="radioButton" type="radio" name="simulation" onclick="setSimulation(1)"checked><strong> Bernoulli Process</strong>
+            <input id="butt1" class="radioButton" type="radio" name="simulation" onclick="setSimulation(1)"checked><strong> Bernoulli Process</strong>
         </label>
     </div>
     <div class="col-lg-3 col-12">
         <label>
-            <input class="radioButton" type="radio" name="simulation" onclick="setSimulation(2)"><strong> Random Walk</strong>
+            <input id="butt2" class="radioButton" type="radio" name="simulation" onclick="setSimulation(2)"><strong> Random Walk</strong>
         </label>
     </div>
     <div class="col-lg-3 col-12">
         <label>
-            <input class="radioButton" type="radio" name="simulation" onclick="setSimulation(3)"><strong> Proability = p*dt</strong>
+            <input id="butt3" class="radioButton" type="radio" name="simulation" onclick="setSimulation(3)"><strong> Proability = lambda*dt</strong>
         </label>
     </div>
     <div class="col-lg-3 col-12">
         <label>
-            <input class="radioButton" type="radio" name="simulation" onclick="setSimulation(4)"><strong> Scaling limit of Random Walk</strong>
+            <input id="butt4" class="radioButton" type="radio" name="simulation" onclick="setSimulation(4)"><strong> Scaling limit of Random Walk</strong>
         </label>
     </div>
 
@@ -83,7 +83,7 @@
         <input class="input" type="number" id="numIntervals" value="200">
     </div>
     <div class="col-lg-2 col-12" style="padding-bottom: 20px;">
-        <label for="probability"><strong>probability: </strong></label>
+        <label id="probabilityLabel" for="probability"><strong>probability: </strong></label>
         <input class="input prob" type="number" id="probability" step="0.1" value="0.5">
     </div>
     <div class="col-lg-2 col-6" style="padding-bottom: 20px;">
@@ -115,6 +115,20 @@ function setSimulation(simulationNumber) {
             runButton.onclick = runSimulation4;
             break;
     }
+}
+
+document.getElementById("butt3").onclick = switchLabel;
+function switchLabel(){
+const label = document.getElementById("probabilityLabel");
+label.innerHTML = "<strong>lambda: </strong>";
+}
+
+document.getElementById("butt1").onclick = switchLabel0;
+document.getElementById("butt2").onclick = switchLabel0;
+document.getElementById("butt4").onclick = switchLabel0;
+function switchLabel0(){
+const label = document.getElementById("probabilityLabel");
+label.innerHTML = "<strong>probability: </strong>";
 }
 
 
