@@ -104,28 +104,28 @@ function setSimulation(simulationNumber) {
     switch (simulationNumber) {
         case 1:
             runButton.onclick = runSimulation1;
+            switchLabel0()
             break;
         case 2:
             runButton.onclick = runSimulation2;
+            switchLabel0()
             break;
         case 3:
             runButton.onclick = runSimulation3;
+            switchLabel();
             break;
         case 4:
             runButton.onclick = runSimulation4;
+            switchLabel0()
             break;
     }
 }
 
-document.getElementById("butt3").onclick = switchLabel;
 function switchLabel(){
 const label = document.getElementById("probabilityLabel");
 label.innerHTML = "<strong>lambda: </strong>";
 }
 
-document.getElementById("butt1").onclick = switchLabel0;
-document.getElementById("butt2").onclick = switchLabel0;
-document.getElementById("butt4").onclick = switchLabel0;
 function switchLabel0(){
 const label = document.getElementById("probabilityLabel");
 label.innerHTML = "<strong>probability: </strong>";
