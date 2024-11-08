@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Probability Histogram Generator</title>
+    <title>Probability Distribution Simulator</title>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <!-- Include the Chart.js library (UMD build) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
@@ -29,6 +29,7 @@
             border-radius: 10px;
             background-color: green;
             color: white;
+            margin-top: 20px;
         }
         .button:hover{
             background-color: white;
@@ -55,26 +56,55 @@
             width: 100%;
             text-align: center;
         }
+        #stats {
+            text-align: center;
+            margin-top: 20px;
+        }
+        #convergenceNote {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+        }
+        .charts-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: flex-start;
+            gap: 20px;
+        }
+        .chart-wrapper {
+            width: 45%;
+        }
     </style>
 </head>
 <body>
     <div class="container" style="text-align: center;">
         <div style="padding-top: 20px;">
-            <label for="numIntervals"><strong># probability [ 0 - 1 ] intervals: </strong></label>
+            <label for="numIntervals"><strong># probability intervals: </strong></label>
             <input class="input" type="number" id="numIntervals" value="5">
-            <button class="button" id="generateProbabilities">Generate probabilities</button>
+            <button class="button" id="generateProbabilities">Generate Probabilities</button>
         </div>
-        <div class="probabilities" style="padding-top: 20px;">
+        <div class="probabilities">
         </div>
-        <div class="chart-container" style="padding-top: 20px;">
-            <canvas id="histogramChart"></canvas>
+        <div id="stats"></div> <!-- Div to display mean and variance -->
+        <div class="charts-container">
+            <div class="chart-wrapper">
+                <h2>Empirical Distribution</h2>
+                <canvas id="empiricalChart"></canvas>
+            </div>
+            <div class="chart-wrapper">
+                <h2>Theoretical Distribution</h2>
+                <canvas id="theoreticalChart"></canvas>
+            </div>
         </div>
+        <div id="convergenceNote"></div>
     </div>
 </body>
 
 <script>
     window.onload = function() {
-        var histogramChart; // Declare the chart instance variable
+        var empiricalChart;    // Chart instance for Empirical Distribution
+        var theoreticalChart;  // Chart instance for Theoretical Distribution
 
         document.getElementById("generateProbabilities").onclick = generate;
 
@@ -146,8 +176,7 @@
             generateHistogramButton.type = 'button';
             generateHistogramButton.id = 'generateHistogram';
             generateHistogramButton.classList.add('button');
-            generateHistogramButton.style.marginTop = '20px';
-            generateHistogramButton.innerHTML = 'Generate Histogram';
+            generateHistogramButton.innerHTML = 'Generate Histograms';
             generateHistogramButton.disabled = false; // Initially enabled
 
             // Append the button to the form
@@ -158,7 +187,7 @@
 
             // Event listener for 'Generate Histogram' button
             generateHistogramButton.onclick = function() {
-                generateHistogram();
+                generateHistograms();
             };
 
             function checkSum() {
@@ -187,7 +216,7 @@
             // Initial check to handle cases where inputs are modified before first check
             checkSum();
 
-            function generateHistogram() {
+            function generateHistograms() {
                 // Get the number of attempts
                 var attempts = parseInt(attemptsInput.value);
                 if (isNaN(attempts) || attempts <= 0) {
@@ -203,6 +232,18 @@
                     probs.push(val);
                 }
 
+                // Compute theoretical mean and variance
+                var theoreticalMean = 0;
+                var theoreticalVariance = 0;
+                for (var i = 0; i < numIntervals; i++) {
+                    var x = i + 1; // Assuming x_i = i + 1
+                    theoreticalMean += x * probs[i];
+                }
+                for (var i = 0; i < numIntervals; i++) {
+                    var x = i + 1;
+                    theoreticalVariance += probs[i] * Math.pow(x - theoreticalMean, 2);
+                }
+
                 // Create cumulative distribution
                 var cumulativeProbs = [];
                 var cumulativeSum = 0;
@@ -213,42 +254,65 @@
 
                 // Perform the simulation
                 var counts = new Array(numIntervals).fill(0);
+                var mean = 0;
+                var deviance = 0;
+
                 for (var i = 0; i < attempts; i++) {
                     var rand = Math.random();
                     for (var j = 0; j < cumulativeProbs.length; j++) {
                         if (rand <= cumulativeProbs[j]) {
                             counts[j]++;
+                            // Welford's algorithm for mean and variance
+                            var level = j + 1; // Level (x_i)
+                            var k = i + 1;     // Current sample size
+                            var delta = level - mean;
+                            mean += delta / k;
+                            deviance += delta * (level - mean);
                             break;
                         }
                     }
                 }
 
-                // Prepare data for the histogram
+                // Calculate the variance
+                var variance = deviance / (attempts - 1);
+
+                // Prepare data for the histograms
                 var labels = [];
                 for (var i = 0; i < numIntervals; i++) {
                     labels.push('p' + (i + 1));
                 }
 
-                // Destroy previous chart instance if it exists
-                if (histogramChart) {
-                    histogramChart.destroy();
+                // Prepare data for the theoretical distribution
+                var theoreticalCounts = probs.map(function(p) {
+                    return p * attempts;
+                });
+
+                // Destroy previous chart instances if they exist
+                if (empiricalChart) {
+                    empiricalChart.destroy();
+                }
+                if (theoreticalChart) {
+                    theoreticalChart.destroy();
                 }
 
-                // Get the context of the canvas element
-                var ctx = document.getElementById('histogramChart').getContext('2d');
+                // Get the context of the canvas elements
+                var empiricalCtx = document.getElementById('empiricalChart').getContext('2d');
+                var theoreticalCtx = document.getElementById('theoreticalChart').getContext('2d');
 
-                // Create the histogram chart
-                histogramChart = new Chart(ctx, {
+                // Create the Empirical Distribution chart
+                empiricalChart = new Chart(empiricalCtx, {
                     type: 'bar',
                     data: {
                         labels: labels,
-                        datasets: [{
-                            label: 'Counts',
-                            data: counts,
-                            backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        }]
+                        datasets: [
+                            {
+                                label: 'Empirical Counts',
+                                data: counts,
+                                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }
+                        ]
                     },
                     options: {
                         scales: {
@@ -273,6 +337,56 @@
                         }
                     }
                 });
+
+                // Create the Theoretical Distribution chart
+                theoreticalChart = new Chart(theoreticalCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Theoretical Counts',
+                                data: theoreticalCounts,
+                                backgroundColor: 'rgba(192, 75, 75, 0.6)',
+                                borderColor: 'rgba(192, 75, 75, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Frequency'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Intervals'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+
+                // Display mean and variance above the histograms
+                var statsDiv = document.getElementById('stats');
+                statsDiv.innerHTML = '<p><strong>Empirical Mean:</strong> ' + mean.toFixed(2) +
+                                     '&nbsp;&nbsp;<strong>Theoretical Mean:</strong> ' + theoreticalMean.toFixed(2) +
+                                     '<br><strong>Empirical Variance:</strong> ' + variance.toFixed(2) +
+                                     '&nbsp;&nbsp;<strong>Theoretical Variance:</strong> ' + theoreticalVariance.toFixed(2)+ '</p>';
+
+                // Display convergence note
+                var convergenceNote = document.getElementById('convergenceNote');
+                convergenceNote.innerHTML = 'As the number of attempts increases, the empirical distribution converges to the theoretical distribution.';
             }
         }
     }
