@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Probability Distribution Simulator</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <!-- Include the Chart.js library (UMD build) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            margin: 0;
+        }
+        h1, h2 {
+            font-size: 24px;
+        }
+        p {
+            font-size: 16px;
+        }
+        .input{
+            width: 80px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 5px;
+        }
+        .button{
+            width: 200px;
+            border-radius: 10px;
+            background-color: green;
+            color: white;
+            margin-top: 20px;
+        }
+        .button:hover{
+            background-color: white;
+            color: green;
+            cursor: pointer;
+        }
+        .chart-container {
+            width: 800px;
+            margin: 0 auto;
+        }
+        .probabilities-form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .probabilities-form label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #stats {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        #invalidMessage {
+            width: 100%;
+            text-align: center;
+        }
+        #stats {
+            text-align: center;
+            margin-top: 20px;
+        }
+        #convergenceNote {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+        }
+        .charts-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: flex-start;
+            gap: 20px;
+        }
+        .chart-wrapper {
+            width:25%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="text-align: center;">
+        <div style="padding-top: 20px;">
+            <label for="numIntervals"><strong># probability intervals: </strong></label>
+            <input class="input" type="number" id="numIntervals" value="5">
+            <button class="button" id="generateProbabilities">Generate Probabilities</button>
+        </div>
+        <div class="probabilities">
+        </div>
+        <div id="stats"></div> <!-- Div to display mean and variance -->
+        <div id="chartsContainer" class="charts-container">
+        </div>
+        <div id="convergenceNote"></div>
+    </div>
+</body>
+
+<script>
+    window.onload = function() {
+        var theoreticalChart;  // Chart instance for Theoretical Distribution
+
+        document.getElementById("generateProbabilities").onclick = generate;
+
+        function generate(){
+            var numIntervals = parseInt(document.getElementById('numIntervals').value);
+            var probabilitiesDiv = document.querySelector('.probabilities');
+            probabilitiesDiv.innerHTML = ''; // Clear previous content
+
+            var randomNumbers = [];
+            for (var i = 0; i < numIntervals; i++) {
+                randomNumbers.push(Math.random());
+            }
+
+            var sum = randomNumbers.reduce(function(a,b){ return a+b; }, 0);
+
+            var probabilities = randomNumbers.map(function(n){
+                return n / sum;
+            });
+
+            // Create a form to hold the inputs
+            var form = document.createElement('form');
+            form.classList.add('probabilities-form');
+
+            // Create an element to display the 'Invalid values' message
+            var invalidMessage = document.createElement('p');
+            invalidMessage.id = 'invalidMessage';
+            invalidMessage.style.color = 'red';
+            invalidMessage.innerHTML = ''; // Empty initially
+
+            // Append the message to the form
+            form.appendChild(invalidMessage);
+
+            for (var i = 0; i < numIntervals; i++) {
+                var label = document.createElement('label');
+                label.innerHTML = 'p' + (i+1) + ': ';
+
+                var input = document.createElement('input');
+                input.type = 'number';
+                input.step = 'any';
+                input.value = probabilities[i].toFixed(3);
+                input.min = '0';
+                input.max = '1';
+                input.classList.add('input');
+
+                // Add an event listener to check the sum when the value changes
+                input.oninput = checkSum;
+
+                // Attach the input to the label
+                label.appendChild(input);
+
+                // Append the label to the form
+                form.appendChild(label);
+            }
+
+            // Create '# attempts' label and input
+            var attemptsLabel = document.createElement('label');
+            attemptsLabel.innerHTML = '<strong># attempts: </strong>';
+
+            var attemptsInput = document.createElement('input');
+            attemptsInput.type = 'number';
+            attemptsInput.value = '1000';
+            attemptsInput.classList.add('input');
+
+            attemptsLabel.appendChild(attemptsInput);
+            form.appendChild(attemptsLabel);
+
+             // Create '# repetitions' label and input
+             var repetitionsLabel = document.createElement('label');
+             repetitionsLabel.innerHTML = '<strong># repetitions: </strong>';
+
+            var repetitionsInput = document.createElement('input');
+            repetitionsInput.type = 'number';
+            repetitionsInput.value = '5';
+            repetitionsInput.classList.add('input');
+
+            repetitionsLabel.appendChild(repetitionsInput);
+            form.appendChild(repetitionsLabel);
+
+            // Create the 'Generate Histogram' button
+            var generateHistogramButton = document.createElement('button');
+            generateHistogramButton.type = 'button';
+            generateHistogramButton.id = 'generateHistogram';
+            generateHistogramButton.classList.add('button');
+            generateHistogramButton.innerHTML = 'Generate Histograms';
+            generateHistogramButton.disabled = false; // Initially enabled
+
+            // Append the button to the form
+            form.appendChild(generateHistogramButton);
+
+            // Append the form to the probabilities div
+            probabilitiesDiv.appendChild(form);
+
+            // Event listener for 'Generate Histogram' button
+            generateHistogramButton.onclick = function() {
+                generateHistograms();
+            };
+
+            function checkSum() {
+                // Get all input values
+                var inputs = form.querySelectorAll('input[type="number"]');
+                var total = 0;
+                var valid = true;
+                for (var i = 0; i < numIntervals; i++) {
+                    var val = parseFloat(inputs[i].value);
+                    if (isNaN(val) || val < 0 || val > 1) {
+                        valid = false;
+                        break;
+                    }
+                    total += val;
+                }
+                // Check if total is approximately 1 (allowing for small rounding errors)
+                if (!valid || Math.abs(total - 1) > 0.0001) {
+                    invalidMessage.innerHTML = 'Invalid values';
+                    generateHistogramButton.disabled = true;
+                } else {
+                    invalidMessage.innerHTML = '';
+                    generateHistogramButton.disabled = false;
+                }
+            }
+
+            // Initial check to handle cases where inputs are modified before first check
+            checkSum();
+
+            function generateHistograms() {
+                var graphdiv = document.getElementById('chartsContainer');
+                    graphdiv.innerHTML = '';
+                // Crea il div wrapper
+                var chartWrapper = document.createElement('div');
+                chartWrapper.className = 'chart-wrapper';
+
+                // Crea l'elemento h2
+                var titolo = document.createElement('h2');
+                titolo.textContent = 'Theoretical Distribution';
+
+                // Crea l'elemento canvas con id incrementale
+                var canvas = document.createElement('canvas');
+                canvas.id = 'theoreticalChart';
+
+                // Appendi h2 e canvas al div wrapper
+                chartWrapper.appendChild(titolo);
+                chartWrapper.appendChild(canvas);
+
+                // Appendi il div wrapper al container principale
+                var chartsContainer = document.getElementById('chartsContainer');
+                chartsContainer.appendChild(chartWrapper);
+                
+                // Get the number of attempts
+                var attempts = parseInt(attemptsInput.value);
+                if (isNaN(attempts) || attempts <= 0) {
+                    alert('Please enter a valid number of attempts.');
+                    return;
+                }
+
+                // Get the number of repetitions
+                var repetitions = parseInt(repetitionsInput.value);
+                if (isNaN(repetitions) || repetitions <= 0) {
+                    alert('Please enter a valid number of repetitions.');
+                    return;
+                }
+
+                // Get updated probabilities
+                var inputs = form.querySelectorAll('input[type="number"]');
+                var probs = [];
+                for (var i = 0; i < numIntervals; i++) {
+                    var val = parseFloat(inputs[i].value);
+                    probs.push(val);
+                }
+
+                // Compute theoretical mean and variance
+                var theoreticalMean = 0;
+                var theoreticalVariance = 0;
+                for (var i = 0; i < numIntervals; i++) {
+                    var x = i + 1; // Assuming x_i = i + 1
+                    theoreticalMean += x * probs[i];
+                }
+                for (var i = 0; i < numIntervals; i++) {
+                    var x = i + 1;
+                    theoreticalVariance += probs[i] * Math.pow(x - theoreticalMean, 2);
+                }
+
+                // Create cumulative distribution
+                var cumulativeProbs = [];
+                var cumulativeSum = 0;
+                for (var i = 0; i < probs.length; i++) {
+                    cumulativeSum += probs[i];
+                    cumulativeProbs.push(cumulativeSum);
+                }
+
+                // Prepare data for the histograms
+                var labels = [];
+                for (var i = 0; i < numIntervals; i++) {
+                    labels.push('p' + (i + 1));
+                }
+
+                // Prepare data for the theoretical distribution
+                var theoreticalCounts = probs.map(function(p) {
+                    return p * attempts;
+                });
+
+                // Destroy previous chart instances if they exist
+                if (theoreticalChart) {
+                    theoreticalChart.destroy();
+                }
+
+                // Get the context of the canvas elements
+                var theoreticalCtx = document.getElementById('theoreticalChart').getContext('2d');
+
+                // Create the Theoretical Distribution chart
+                theoreticalChart = new Chart(theoreticalCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Theoretical Counts',
+                                data: theoreticalCounts,
+                                backgroundColor: 'rgba(192, 75, 75, 0.6)',
+                                borderColor: 'rgba(192, 75, 75, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Frequency'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Intervals'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+
+                // Display mean and variance above the histograms
+                var statsDiv = document.getElementById('stats');
+                statsDiv.innerHTML = '<p><strong>Theoretical Mean:</strong> ' + theoreticalMean.toFixed(2) +
+                                     '<br><strong>Theoretical Variance:</strong> ' + theoreticalVariance.toFixed(2)+ '</p>';
+
+                var totalMean = 0;
+                var totalVariance = 0;
+
+                for (var z = 0; z < repetitions; z++){
+                    var empiricalChart;
+                    // Crea il div wrapper
+                    var chartWrapper = document.createElement('div');
+                    chartWrapper.className = 'chart-wrapper';
+
+                    // Crea l'elemento h2
+                    var titolo = document.createElement('h2');
+                    titolo.textContent = 'Empirical Distribution #'+ (z+1);
+
+                    // Crea l'elemento canvas con id incrementale
+                    var canvas = document.createElement('canvas');
+                    canvas.id = 'empiricalChart-' + z;
+
+                    // Appendi h2 e canvas al div wrapper
+                    chartWrapper.appendChild(titolo);
+                    chartWrapper.appendChild(canvas);
+
+                    // Appendi il div wrapper al container principale
+                    var chartsContainer = document.getElementById('chartsContainer');
+                    chartsContainer.appendChild(chartWrapper);
+
+                    // Create cumulative distribution
+                    var cumulativeProbs = [];
+                    var cumulativeSum = 0;
+                    for (var i = 0; i < probs.length; i++) {
+                        cumulativeSum += probs[i];
+                        cumulativeProbs.push(cumulativeSum);
+                    }
+
+                    // Perform the simulation
+                    var counts = new Array(numIntervals).fill(0);
+                    var mean = 0;
+                    var deviance = 0;
+
+                    for (var i = 0; i < attempts; i++) {
+                        var rand = Math.random();
+                        for (var j = 0; j < cumulativeProbs.length; j++) {
+                            if (rand <= cumulativeProbs[j]) {
+                                counts[j]++;
+                                // Welford's algorithm for mean and variance
+                                var level = j + 1; // Level (x_i)
+                                var k = i + 1;     // Current sample size
+                                var delta = level - mean;
+                                mean += delta / k;
+                                deviance += delta * (level - mean);
+                                break;
+                            }
+                        }
+                    }
+
+                    // Calculate the variance
+                    var variance = deviance / (attempts - 1);
+
+                    totalMean += mean;
+                    totalVariance += variance;
+
+                    // Prepare data for the histograms
+                    var labels = [];
+                    for (var i = 0; i < numIntervals; i++) {
+                        labels.push('p' + (i + 1));
+                    }
+
+                    // Get the context of the canvas elements
+                    var empiricalCtx = document.getElementById('empiricalChart-'+z).getContext('2d');
+
+                    // Create the Empirical Distribution chart
+                    empiricalChart = new Chart(empiricalCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Empirical Counts',
+                                    data: counts,
+                                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    borderWidth: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Frequency'
+                                    }
+                                },
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Intervals'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            }
+                        }
+                    });
+                    
+                    // Display mean and variance above the histograms
+                    statsDiv.innerHTML += '<p><strong>Empirical Mean #' + (z+1) + ':</strong> ' + mean.toFixed(2) +
+                                        '<br><strong>Empirical Variance #' + (z+1) +':</strong> ' + variance.toFixed(2)+ '</p>';
+                }
+
+                statsDiv.innerHTML += '<p><strong>Mean of the total Mean:</strong> ' + (totalMean/repetitions).toFixed(2) +
+                    '<br><strong>Mean of the total Variance:</strong> ' + (totalVariance/repetitions).toFixed(2)+ '</p>';
+
+            }
+        }
+    }
+</script>
+</html>
