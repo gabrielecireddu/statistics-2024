@@ -85,6 +85,11 @@
         .chart-wrapper {
             width:25%;
         }
+        /* New style for centering the sampling average chart */
+        .sampling-average-chart {
+            width: 50%;
+            margin: 0 auto;
+        }
     </style>
 </head>
 <body>
@@ -97,6 +102,8 @@
         <div class="probabilities">
         </div>
         <div id="stats"></div> <!-- Div to display mean and variance -->
+        <!-- Div to hold the sampling average chart -->
+        <div id="samplingAverageContainer"></div>
         <div id="chartsContainer" class="charts-container">
         </div>
         <div id="convergenceNote"></div>
@@ -106,6 +113,7 @@
 <script>
     window.onload = function() {
         var theoreticalChart;  // Chart instance for Theoretical Distribution
+        var samplingAverageChart; // Chart instance for Sampling Average Distribution
 
         document.getElementById("generateProbabilities").onclick = generate;
 
@@ -166,7 +174,7 @@
 
             var attemptsInput = document.createElement('input');
             attemptsInput.type = 'number';
-            attemptsInput.value = '1000';
+            attemptsInput.value = '10000';
             attemptsInput.classList.add('input');
 
             attemptsLabel.appendChild(attemptsInput);
@@ -178,7 +186,7 @@
 
             var repetitionsInput = document.createElement('input');
             repetitionsInput.type = 'number';
-            repetitionsInput.value = '5';
+            repetitionsInput.value = '100';
             repetitionsInput.classList.add('input');
 
             repetitionsLabel.appendChild(repetitionsInput);
@@ -231,7 +239,27 @@
 
             function generateHistograms() {
                 var graphdiv = document.getElementById('chartsContainer');
-                    graphdiv.innerHTML = '';
+                graphdiv.innerHTML = '';
+                var samplingAverageContainer = document.getElementById('samplingAverageContainer');
+                samplingAverageContainer.innerHTML = '';
+                // Create the sampling average chart container
+                var samplingChartWrapper = document.createElement('div');
+                samplingChartWrapper.className = 'sampling-average-chart';
+
+                // Create the title
+                var samplingTitle = document.createElement('h2');
+                samplingTitle.textContent = 'Distribution of Sampling Averages';
+
+                // Create the canvas
+                var samplingCanvas = document.createElement('canvas');
+                samplingCanvas.id = 'samplingAverageChart';
+
+                // Append elements
+                samplingChartWrapper.appendChild(samplingTitle);
+                samplingChartWrapper.appendChild(samplingCanvas);
+                samplingAverageContainer.appendChild(samplingChartWrapper);
+
+                // Create the theoretical distribution chart container
                 // Crea il div wrapper
                 var chartWrapper = document.createElement('div');
                 chartWrapper.className = 'chart-wrapper';
@@ -251,7 +279,7 @@
                 // Appendi il div wrapper al container principale
                 var chartsContainer = document.getElementById('chartsContainer');
                 chartsContainer.appendChild(chartWrapper);
-                
+
                 // Get the number of attempts
                 var attempts = parseInt(attemptsInput.value);
                 if (isNaN(attempts) || attempts <= 0) {
@@ -286,14 +314,6 @@
                     theoreticalVariance += probs[i] * Math.pow(x - theoreticalMean, 2);
                 }
 
-                // Create cumulative distribution
-                var cumulativeProbs = [];
-                var cumulativeSum = 0;
-                for (var i = 0; i < probs.length; i++) {
-                    cumulativeSum += probs[i];
-                    cumulativeProbs.push(cumulativeSum);
-                }
-
                 // Prepare data for the histograms
                 var labels = [];
                 for (var i = 0; i < numIntervals; i++) {
@@ -309,9 +329,13 @@
                 if (theoreticalChart) {
                     theoreticalChart.destroy();
                 }
+                if (samplingAverageChart) {
+                    samplingAverageChart.destroy();
+                }
 
                 // Get the context of the canvas elements
                 var theoreticalCtx = document.getElementById('theoreticalChart').getContext('2d');
+                var samplingAverageCtx = document.getElementById('samplingAverageChart').getContext('2d');
 
                 // Create the Theoretical Distribution chart
                 theoreticalChart = new Chart(theoreticalCtx, {
@@ -354,11 +378,12 @@
 
                 // Display mean and variance above the histograms
                 var statsDiv = document.getElementById('stats');
-                statsDiv.innerHTML = '<p><strong>Theoretical Mean:</strong> ' + theoreticalMean.toFixed(2) +
+                statsDiv.innerHTML = '<p style="color:red;"><strong>Theoretical Mean:</strong> ' + theoreticalMean.toFixed(2) +
                                      '<br><strong>Theoretical Variance:</strong> ' + theoreticalVariance.toFixed(2)+ '</p>';
 
                 var totalMean = 0;
                 var totalVariance = 0;
+                var sampleMeans = []; // Array to store sample means
 
                 for (var z = 0; z < repetitions; z++){
                     var empiricalChart;
@@ -416,6 +441,7 @@
 
                     totalMean += mean;
                     totalVariance += variance;
+                    sampleMeans.push(mean); // Store the sample mean
 
                     // Prepare data for the histograms
                     var labels = [];
@@ -464,15 +490,74 @@
                             }
                         }
                     });
-                    
+
                     // Display mean and variance above the histograms
                     statsDiv.innerHTML += '<p><strong>Empirical Mean #' + (z+1) + ':</strong> ' + mean.toFixed(2) +
                                         '<br><strong>Empirical Variance #' + (z+1) +':</strong> ' + variance.toFixed(2)+ '</p>';
                 }
 
-                statsDiv.innerHTML += '<p><strong>Mean of the total Mean:</strong> ' + (totalMean/repetitions).toFixed(2) +
+                statsDiv.innerHTML += '<p style="color:blue;"><strong>Mean of the total Mean:</strong> ' + (totalMean/repetitions).toFixed(2) +
                     '<br><strong>Mean of the total Variance:</strong> ' + (totalVariance/repetitions).toFixed(2)+ '</p>';
 
+                // Prepare data for sampling average distribution
+                var samplingLabels = [];
+                var samplingCounts = [];
+                var samplingData = {};
+
+                // Determine the number of bins (optional, here we use unique values)
+                sampleMeans.forEach(function(mean) {
+                    var key = mean.toFixed(2);
+                    if (samplingData[key]) {
+                        samplingData[key]++;
+                    } else {
+                        samplingData[key] = 1;
+                    }
+                });
+
+                // Prepare labels and counts
+                for (var key in samplingData) {
+                    samplingLabels.push(key);
+                    samplingCounts.push(samplingData[key]);
+                }
+
+                // Create the Sampling Average Distribution chart
+                samplingAverageChart = new Chart(samplingAverageCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: samplingLabels,
+                        datasets: [
+                            {
+                                label: 'Sampling Averages',
+                                data: samplingCounts,
+                                backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                                borderColor: 'rgba(153, 102, 255, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Frequency'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Sample Means'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
             }
         }
     }
