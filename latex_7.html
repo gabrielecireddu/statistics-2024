@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive LaTeX</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            margin: 0;
+        }
+        h1, h2 {
+            font-size: 24px;
+        }
+        h3 {
+            font-size: 20px;
+        }
+        p {
+            font-size: 16px;
+        }
+        .math-container {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        /* Ridimensionamento responsive per formule */
+        @media (max-width: 1200px) {
+            p {
+            font-size: 12px;
+        }
+        }
+        @media (max-width: 880px) {
+            p {
+            font-size: 10px;
+        }
+        }
+        @media (max-width: 740px) {
+            p {
+            font-size: 8px;
+        }
+        }
+        @media (max-width: 600px) {
+            p {
+            font-size: 6px;
+        }
+        }
+        @media (max-width: 500px) {
+            p {
+            font-size: 5px;
+        }
+        }
+        @media (max-width: 450px) {
+            p {
+            font-size: 4px;
+        }
+        }
+        @media (max-width: 380px) {
+            p {
+            font-size: 3px;
+        }
+        }
+        @media (max-width: 290px) {
+            p {
+            font-size: 2px;
+        }
+        }
+        @media (max-width: 240px) {
+            p {
+            font-size: 1px;
+        }
+        }
+    </style>
+</head>
+<body>
+    <div class="math-container">
+        <h2>Observations and Results</h2>
+        <p>
+            After performing the simulations with varying sample sizes \( n \) and number of samples \( m \), we observe the following:
+        </p>
+        <h3>Mean of Sampling Averages (\( \overline{X}_{\text{mean}} \)):</h3>
+        <p>
+            The mean of the sample means (\( \overline{X}_{\text{mean}} \)) closely approximates the theoretical mean (\( \mu \)) of the parent distribution.<br>
+            As the number of samples \( m \) increases, \( \overline{X}_{\text{mean}} \) converges to \( \mu \).
+        </p>
+        <h3>Variance of Sampling Averages (\( \sigma_{\overline{X}}^2 \)):</h3>
+        <p>
+            The variance of the sample means is approximately equal to the theoretical variance divided by the sample size (\( \sigma_{\overline{X}}^2 \approx \frac{\sigma^2}{n} \)).<br>
+            Increasing the sample size \( n \) leads to a decrease in \( \sigma_{\overline{X}}^2 \), demonstrating that sample means become less variable with larger \( n \).
+        </p>
+        <h2>5. Relationship with the Parent Distribution</h2>
+        <strong>Convergence of Means:</strong>
+        <p>
+            The consistency between \( \overline{X}_{\text{mean}} \) and \( \mu \) illustrates the Law of Large Numbers, which states that the sample mean converges in probability towards the expected value as the sample size increases.<br>
+            With larger \( m \), the distribution of the sampling averages becomes more concentrated around \( \mu \), reflecting increased accuracy.
+        </p>
+        <strong>Convergence of Variances:</strong>
+        <p>
+            The relationship \( \sigma_{\overline{X}}^2 = \frac{\sigma^2}{n} \) indicates that the variability of the sampling averages decreases with larger sample sizes.<br>
+            This phenomenon is a key aspect of the Central Limit Theorem, which also implies that the distribution of the sampling averages approaches a normal distribution as \( n \) increases, regardless of the parent distribution's shape.
+        </p>
+        <h2>6. Impact of Increasing Sample Size and Number of Samples</h2>
+        <strong>Effect of Increasing \( n \) (Sample Size):</strong>
+        <p>
+            <em>Reduction in Variance:</em> As \( n \) increases, \( \sigma_{\overline{X}}^2 \) decreases, leading to a tighter clustering of sample means around \( \mu \).<br>
+            <em>Approach to Normality:</em> Larger \( n \) enhances the normality of the sampling distribution of the mean due to the Central Limit Theorem.
+        </p>
+        <strong>Effect of Increasing \( m \) (Number of Samples):</strong>
+        <p>
+            <em>Stability of Estimates:</em> A larger \( m \) provides a more reliable estimate of \( \overline{X}_{\text{mean}} \) and \( \sigma_{\overline{X}}^2 \).<br>
+            <em>Convergence to Theoretical Values:</em> With more samples, the empirical distribution of sampling averages better approximates the theoretical predictions.
+        </p>
+        <strong>Combined Effect:</strong>
+        <p>
+            Increasing both \( n \) and \( m \) results in the distribution of sampling averages closely mirroring the theoretical normal distribution centered at \( \mu \) with variance \( \frac{\sigma^2}{n} \).<br>
+            The mean of the sample means and the mean of the variances converge to the parent distribution's mean and the scaled variance, respectively.
+        </p>
+    </div>
+</body>
+</html>
