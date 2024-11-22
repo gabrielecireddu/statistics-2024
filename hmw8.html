@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Caesar Cipher Encoder</title>
+    <style>
+        /* Stili CSS */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+
+        textarea {
+            width: 90%;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        canvas {
+            border: 1px solid #ccc;
+            margin-top: 20px;
+        }
+
+        #shiftInfo {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Caesar Cipher Encoder</h1>
+    <textarea id="inputText" rows="15" cols="100" placeholder="Inserisci qui il tuo testo (almeno 500 caratteri)..."></textarea><br>
+    <button id="generateButton">Genera Testo Casuale</button>
+    <button id="encodeButton">ENCODE</button>
+    <div id="shiftInfo">
+        <h2>Shift Applicato:</h2>
+        <p id="actualShift"></p>
+    </div>
+    <h2>Testo Criptato:</h2>
+    <textarea id="outputText" rows="15" cols="100" readonly></textarea>
+    <h2>Istogramma delle Lettere:</h2>
+    <canvas id="histogram" width="800" height="400"></canvas>
+    <h2>Shift Stimato:</h2>
+    <p id="estimatedShift"></p>
+
+    <script>
+        // Script JavaScript
+
+        document.getElementById('generateButton').addEventListener('click', function() {
+            let randomText = generateRandomText(500);
+            document.getElementById('inputText').value = randomText;
+        });
+
+        document.getElementById('encodeButton').addEventListener('click', function() {
+            let text = document.getElementById('inputText').value;
+            if (text.length < 500) {
+                alert('Il testo deve contenere almeno 500 caratteri.');
+                return;
+            }
+
+            let shift = Math.floor(Math.random() * 26) + 1;
+            if (Math.random() < 0.5) shift = -shift; // Shift positivo o negativo
+
+            // Mostra lo shift applicato
+            document.getElementById('actualShift').textContent = 'Lo shift applicato è: ' + shift;
+
+            let encryptedText = caesarCipher(text, shift);
+            document.getElementById('outputText').value = encryptedText;
+
+            let frequency = letterFrequency(encryptedText);
+            drawHistogram(frequency);
+
+            // Stima dello shift
+            let estimatedShift = estimateShift(frequency);
+            // Visualizza lo shift stimato
+            document.getElementById('estimatedShift').textContent = 'Lo shift stimato è: +' + estimatedShift;
+        });
+
+        function generateRandomText(minLength) {
+            const words = [
+                "the", "be", "to", "of", "and", "a", "in", "that", "have", "I",
+                "it", "for", "not", "on", "with", "he", "as", "you", "do", "at",
+                "this", "but", "his", "by", "from", "they", "we", "say", "her", "she",
+                "or", "an", "will", "my", "one", "all", "would", "there", "their",
+                "what", "so", "up", "out", "if", "about", "who", "get", "which", "go",
+                "me", "when", "make", "can", "like", "time", "no", "just", "him", "know",
+                "take", "people", "into", "year", "your", "good", "some", "could", "them", "see",
+                "other", "than", "then", "now", "look", "only", "come", "its", "over", "think",
+                "also", "back", "after", "use", "two", "how", "our", "work", "first", "well",
+                "way", "even", "new", "want", "because", "any", "these", "give", "day", "most",
+                "us", "is", "are", "was", "were", "been", "has", "had", "did", "does",
+                "more", "such", "should", "must", "might", "made", "many", "those", "being", "never",
+                "still", "here", "before", "long", "same", "each", "under", "last", "man", "place",
+                "little", "great", "through", "between", "both", "too", "much", "where", "well", "need",
+                "feel", "seem", "how", "high", "next", "put", "another", "again", "away", "few",
+                "during", "ever", "always", "though", "right", "tell", "set", "three", "small", "every",
+                "found", "thought", "still", "around", "small", "case", "without", "give", "large", "once",
+                "might", "course", "fact", "ask", "part", "end", "world", "new", "kind", "hand",
+                "old", "life", "eye", "woman", "place", "same", "thing", "child", "mean", "school",
+                "leave", "country", "let", "keep", "put", "point", "house", "different", "group", "week",
+                "while", "number", "system", "feel", "part", "might", "night", "live", "home", "story",
+                "call", "meet", "turn", "problem", "begin", "head", "far", "black", "body", "stand",
+                "sure", "learn", "should", "American", "father", "family", "run", "student", "side", "ask",
+                "provide", "door", "room", "important", "money", "power", "often", "line", "political", "among",
+                "consider", "word", "program", "service", "area", "study", "issue", "name", "idea", "job",
+                "company", "kid", "face", "minute", "include", "bring", "information", "nothing", "right", "government",
+                "next", "business", "fact", "change", "month", "morning", "age", "off", "question", "help",
+                "war", "write", "start", "hold", "stop", "interest", "real", "course", "voice", "close",
+                "friend", "such", "together", "love", "pass", "require", "across", "city", "mother", "walk",
+                "white", "least", "seem", "reason", "low", "win", "research", "girl", "guy", "early",
+                "food", "moment", "himself", "air", "teacher", "force", "offer", "enough", "education", "foot",
+                "second", "boy", "maybe", "toward", "able", "age", "policy", "everything", "love", "process",
+                "music", "including", "consider", "appear", "actually", "buy", "probably", "human", "wait", "serve",
+                "market", "die", "send", "expect", "home", "sense", "build", "stay", "fall", "nation",
+                "plan", "cut", "college", "interest", "death", "course", "someone", "experience", "behind", "reach",
+                "local", "kill", "six", "remain", "effect", "yeah", "suggest", "class", "control", "raise",
+                "care", "perhaps", "little", "late", "hard", "field", "else", "pass", "former", "sell",
+                "major", "sometimes", "require", "along", "development", "themselves", "report", "role", "better", "economic",
+                "effort", "decide", "rate", "strong", "possible", "heart", "drug", "show", "leader", "light",
+                "voice", "wife", "whole", "police", "mind", "finally", "pull", "return", "free", "military",
+                "price", "report", "less", "according", "decision", "explain", "son", "hope", "develop", "view",
+                "relationship", "carry", "town", "road", "drive", "arm", "true", "federal", "break", "difference",
+                "thank", "receive", "value", "international", "building", "action", "full", "model", "join", "season",
+                "society", "tax", "director", "position", "player", "agree", "especially", "record", "pick", "wear",
+                "paper", "special", "space", "ground", "form", "support", "event", "official", "whose", "matter",
+                "everyone", "center", "couple", "site", "project", "hit", "base", "activity", "star", "table",
+                "need", "court", "produce", "eat", "teach", "oil", "half", "situation", "easy", "cost",
+                "industry", "figure", "face", "street", "image", "itself", "phone", "either", "data", "cover",
+                "quite", "picture", "clear", "practice", "piece", "land", "recent", "describe", "product", "doctor",
+                "wall", "patient", "worker", "news", "test", "movie", "certain", "north", "love", "personal",
+                "open", "support", "simply", "third", "technology", "catch", "step", "baby", "computer", "type",
+                "attention", "draw", "film", "Republican", "tree", "source", "red", "nearly", "organization", "choose",
+                "cause", "hair", "look", "point", "century", "evidence", "window", "difficult", "listen", "soon",
+                "culture", "billion", "chance", "brother", "energy", "period", "course", "summer", "realize", "hundred",
+                "available", "plant", "likely", "opportunity", "term", "short", "letter", "condition", "choice", "place",
+                "single", "rule", "daughter", "administration", "south", "husband", "Congress", "floor", "campaign", "material",
+                "population", "well", "call", "economy", "medical", "hospital", "church", "close", "thousand", "risk",
+                "current", "fire", "future", "wrong", "involve", "defense", "anyone", "increase", "security", "bank",
+                "myself", "certainly", "west", "sport", "board", "seek", "per", "subject", "officer", "private",
+                "rest", "behavior", "deal", "performance", "fight", "throw", "top", "quickly", "past", "goal",
+                "second", "bed", "order", "author", "fill", "represent", "focus", "foreign", "drop", "plan",
+                "blood", "upon", "agency", "push", "nature", "color", "recently", "store", "reduce", "sound",
+                "note", "fine", "near", "movement", "page", "enter", "share", "common", "poor", "natural",
+                "race", "concern", "series", "significant", "similar", "hot", "language", "usually", "response", "dead",
+                "rise", "animal", "factor", "decade", "article", "shoot", "east", "save", "seven", "artist",
+                "scene", "stock", "career", "despite", "central", "eight", "thus", "treatment", "beyond", "happy",
+                "exactly", "protect", "approach", "lie", "size", "dog", "fund", "serious", "occur", "media",
+                "ready", "sign", "thought", "list", "individual", "simple", "quality", "pressure", "accept", "answer",
+                "hard", "resource", "identify", "left", "meeting", "determine", "prepare", "disease", "whatever", "success",
+                "argue", "cup", "particularly", "amount", "ability", "staff", "recognize", "indicate", "character", "growth",
+                "loss", "degree", "wonder", "attack", "herself", "region", "television", "box", "TV", "training",
+                "pretty", "trade", "election", "everybody", "physical", "general", "feeling", "standard", "bill", "message",
+                "fail", "outside", "arrive", "analysis", "benefit", "name", "sex", "forward", "lawyer", "present",
+                "section", "environmental", "glass", "answer", "skill", "sister", "PM", "professor", "operation", "financial",
+                "crime", "stage", "ok", "compare", "authority", "miss", "design", "sort", "one", "act",
+                "ten", "knowledge", "gun", "station", "blue", "state", "strategy", "little", "clearly", "discuss",
+                "indeed", "force", "truth", "example", "democratic", "check", "environment", "leg", "dark", "public",
+                "various", "rather", "laugh", "guess", "executive", "set", "study", "prove", "hang", "entire",
+                "rock", "forget", "claim", "remove", "manager", "enjoy", "network", "legal", "religious", "cold",
+                "final", "main", "science", "green", "memory", "card", "above", "seat", "cell", "establish",
+                "nice", "trial", "expert", "that", "spring", "firm", "Democrat", "radio", "visit", "management",
+                "care", "avoid", "imagine", "tonight", "huge", "ball", "no", "close", "finish", "yourself",
+                "talk", "theory", "impact", "respond", "statement", "maintain", "charge", "popular", "traditional", "onto",
+                "reveal", "direction", "weapon", "employee", "cultural", "contain", "peace", "head", "control", "base",
+                "pain", "apply", "play", "measure", "wide", "shake", "fly", "interview", "manage", "chair",
+                "fish", "particular", "camera", "structure", "politics", "perform", "bit", "weight", "suddenly", "discover",
+                "candidate", "top", "production", "treat", "evening", "affect", "inside", "conference", "unit", "style",
+                "adult", "worry", "range", "mention", "deep", "edge", "specific", "writer", "trouble", "necessary",
+                "throughout", "challenge", "fear", "shoulder", "institution", "middle", "sea", "dream", "bar", "beautiful",
+                "property", "instead", "improve", "stuff", "claim", "certainly", "someone", "data", "close", "million",
+                "sorry", "activity", "article", "pattern", "spend", "significant", "finish", "station", "cancer", "item",
+                "professor", "relationship", "success", "option", "common", "laugh", "store", "arm", "watch", "together",
+                "project", "press", "concept", "development", "entire", "style", "adult", "worry", "range", "mention",
+                "deep", "edge", "specific", "writer", "trouble", "necessary", "throughout", "challenge", "fear", "shoulder"
+            ];
+
+            let text = "";
+            while (text.length < minLength) {
+                let word = words[Math.floor(Math.random() * words.length)];
+                text += word + " ";
+            }
+            return text.trim();
+        }
+
+        function caesarCipher(str, shift) {
+            return str.replace(/[a-zA-Z]/g, function(char) {
+                let base = char <= 'Z' ? 65 : 97;
+                let code = ((char.charCodeAt(0) - base + shift) % 26);
+                code = code < 0 ? code + 26 : code;
+                return String.fromCharCode(code + base);
+            });
+        }
+
+        function letterFrequency(str) {
+            let freq = {};
+            for (let i = 65; i <= 90; i++) {
+                freq[String.fromCharCode(i)] = 0;
+            }
+            for (let char of str.toUpperCase()) {
+                if (char >= 'A' && char <= 'Z') {
+                    freq[char]++;
+                }
+            }
+            return freq;
+        }
+
+        function drawHistogram(frequency) {
+            let canvas = document.getElementById('histogram');
+            let ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let letters = Object.keys(frequency);
+            let values = Object.values(frequency);
+            let maxFreq = Math.max(...values);
+
+            let barWidth = canvas.width / letters.length;
+            for (let i = 0; i < letters.length; i++) {
+                let barHeight = maxFreq ? (values[i] / maxFreq) * (canvas.height - 30) : 0;
+                ctx.fillStyle = '#4285F4';
+                ctx.fillRect(i * barWidth + 5, canvas.height - barHeight - 20, barWidth - 10, barHeight);
+
+                ctx.fillStyle = '#000';
+                ctx.font = '14px Arial';
+                ctx.fillText(letters[i], i * barWidth + barWidth / 2 - 7, canvas.height - 5);
+            }
+        }
+
+        function estimateShift(frequency) {
+            // Trova la lettera più frequente nel testo criptato
+            let maxFreq = 0;
+            let mostFrequentLetter = '';
+            for (let letter in frequency) {
+                if (frequency[letter] > maxFreq) {
+                    maxFreq = frequency[letter];
+                    mostFrequentLetter = letter;
+                }
+            }
+
+            // Sapendo che 'E' è la lettera più usata in inglese
+            // Calcola lo shift tra la lettera più frequente e 'E'
+            let shift = (mostFrequentLetter.charCodeAt(0) - 'E'.charCodeAt(0)) % 26;
+            if (shift < 0) shift += 26; // Assicura che lo shift sia positivo
+
+            return shift;
+        }
+    </script>
+</body>
+</html>
