@@ -36,7 +36,7 @@
 </head>
 <body>
     <h1>Caesar Cipher Encoder</h1>
-    <textarea id="inputText" rows="15" cols="100" placeholder="Inserisci qui il tuo testo (almeno 500 caratteri)..."></textarea><br>
+    <textarea id="inputText" rows="15" cols="100" placeholder="Enter your text here (at least 100 characters)..."></textarea><br>
     <button id="generateButton">Random Text</button>
     <button id="encodeButton">ENCODE</button>
     <div id="shiftInfo">
@@ -54,14 +54,14 @@
         // Script JavaScript
 
         document.getElementById('generateButton').addEventListener('click', function() {
-            let randomText = generateRandomText(500);
+            let randomText = generateRandomText(100);
             document.getElementById('inputText').value = randomText;
         });
 
         document.getElementById('encodeButton').addEventListener('click', function() {
             let text = document.getElementById('inputText').value;
-            if (text.length < 500) {
-                alert('Il testo deve contenere almeno 500 caratteri.');
+            if (text.length < 100) {
+                alert('At least 100 character.');
                 return;
             }
 
@@ -69,7 +69,7 @@
             if (Math.random() < 0.5) shift = -shift; // Shift positivo o negativo
 
             // Mostra lo shift applicato
-            document.getElementById('actualShift').textContent = 'Lo shift applicato è: ' + shift;
+            document.getElementById('actualShift').textContent = 'Applied Shift: ' + shift;
 
             let encryptedText = caesarCipher(text, shift);
             document.getElementById('outputText').value = encryptedText;
@@ -80,7 +80,7 @@
             // Stima dello shift
             let estimatedShift = estimateShift(frequency);
             // Visualizza lo shift stimato
-            document.getElementById('estimatedShift').textContent = 'Lo shift stimato è: +' + estimatedShift;
+            document.getElementById('estimatedShift').textContent = 'Estimated Shift: +' + estimatedShift;
         });
 
         function generateRandomText(minLength) {
