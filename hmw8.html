@@ -37,17 +37,17 @@
 <body>
     <h1>Caesar Cipher Encoder</h1>
     <textarea id="inputText" rows="15" cols="100" placeholder="Inserisci qui il tuo testo (almeno 500 caratteri)..."></textarea><br>
-    <button id="generateButton">Genera Testo Casuale</button>
+    <button id="generateButton">Random Text</button>
     <button id="encodeButton">ENCODE</button>
     <div id="shiftInfo">
-        <h2>Shift Applicato:</h2>
+        <h2>Applied Shift:</h2>
         <p id="actualShift"></p>
     </div>
-    <h2>Testo Criptato:</h2>
+    <h2>Encrypted Text:</h2>
     <textarea id="outputText" rows="15" cols="100" readonly></textarea>
-    <h2>Istogramma delle Lettere:</h2>
+    <h2>Histogram of Letters:</h2>
     <canvas id="histogram" width="800" height="400"></canvas>
-    <h2>Shift Stimato:</h2>
+    <h2>Estimated Shift:</h2>
     <p id="estimatedShift"></p>
 
     <script>
