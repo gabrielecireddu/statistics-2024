@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive LaTeX</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            margin: 0;
+        }
+        h1, h2 {
+            font-size: 24px;
+        }
+        h3 {
+            font-size: 20px;
+        }
+        p {
+            font-size: 16px;
+        }
+        .math-container {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        /* Ridimensionamento responsive per formule */
+        @media (max-width: 1200px) {
+            p {
+            font-size: 12px;
+        }
+        }
+        @media (max-width: 880px) {
+            p {
+            font-size: 10px;
+        }
+        }
+        @media (max-width: 740px) {
+            p {
+            font-size: 8px;
+        }
+        }
+        @media (max-width: 600px) {
+            p {
+            font-size: 6px;
+        }
+        }
+        @media (max-width: 500px) {
+            p {
+            font-size: 5px;
+        }
+        }
+        @media (max-width: 450px) {
+            p {
+            font-size: 4px;
+        }
+        }
+        @media (max-width: 380px) {
+            p {
+            font-size: 3px;
+        }
+        }
+        @media (max-width: 290px) {
+            p {
+            font-size: 2px;
+        }
+        }
+        @media (max-width: 240px) {
+            p {
+            font-size: 1px;
+        }
+        }
+    </style>
+</head>
+<body>
+    <div class="math-container">
+        <h2>Observations and Results</h2>
+        <p>
+            After performing the simulations with varying sample sizes \( n \) and number of samples \( m \), we observe the following:
+        </p>
+        <h3>Mean of Sampling Variances (\( \overline{S}^2 \)):</h3>
+        <p>
+            The mean of the sample variances (\( \overline{S}^2 \)) closely approximates the theoretical variance (\( \sigma^2 \)) of the parent distribution.<br>
+            As the number of samples \( m \) increases, \( \overline{S}^2 \) converges to \( \sigma^2 \), indicating that the sample variance is an unbiased estimator of the population variance when using the corrected formula.
+        </p>
+        <h3>Variance of Sampling Variances:</h3>
+        <p>
+            The variability among the sample variances decreases as the sample size \( n \) increases.<br>
+            Larger sample sizes result in more consistent estimates of the population variance, reducing the spread of the sampling variance distribution.
+        </p>
+        <h2>Relationship with the Parent Distribution</h2>
+        <strong>Convergence of Variances:</strong>
+        <p>
+            The alignment between \( \overline{S}^2 \) and \( \sigma^2 \) illustrates the Law of Large Numbers for variances, demonstrating that the sample variance converges in probability towards the population variance as the sample size increases.<br>
+            With larger \( m \), the distribution of the sampling variances becomes more concentrated around \( \sigma^2 \), reflecting increased accuracy and reliability.
+        </p>
+        <strong>Effect of Sample Size on Variance Estimation:</strong>
+        <p>
+            Increasing the sample size \( n \) enhances the precision of the variance estimates.<br>
+            Larger \( n \) provides a more detailed representation of the population's variability, leading to sample variances that are closer to \( \sigma^2 \).
+        </p>
+        <h2>Impact of Increasing Sample Size and Number of Samples</h2>
+        <strong>Effect of Increasing \( n \) (Sample Size):</strong>
+        <p>
+            <em>Reduction in Variability:</em> As \( n \) increases, the variance of the sampling variances decreases, resulting in tighter clustering around the population variance \( \sigma^2 \).<br>
+            <em>Improved Estimation:</em> Larger sample sizes yield more accurate and consistent estimates of the population variance.
+        </p>
+        <strong>Effect of Increasing \( m \) (Number of Samples):</strong>
+        <p>
+            <em>Stability of Variance Estimates:</em> A larger \( m \) leads to a more reliable mean of the sample variances (\( \overline{S}^2 \)), as it averages out random fluctuations across samples.<br>
+            <em>Convergence to Theoretical Variance:</em> With more samples, the empirical distribution of sampling variances better approximates the theoretical variance \( \sigma^2 \).
+        </p>
+        <strong>Combined Effect:</strong>
+        <p>
+            Increasing both \( n \) and \( m \) results in the distribution of sampling variances closely mirroring the theoretical variance of the parent distribution.<br>
+            The mean of the sample variances converges to \( \sigma^2 \), and the spread of the sampling variance distribution diminishes, demonstrating the consistency and efficiency of the sample variance as an estimator.
+        </p>
+    </div>
+
+    <div class="math-container">
+        <h2>Main Properties of the Sampling Mean and Variance</h2>
+        <h3>Sampling Mean (\( \overline{X} \)):</h3>
+        <p>
+            The sampling mean is the average value calculated from a sample drawn from a population.<br>
+            <strong>Properties:</strong><br>
+            - <em>Unbiased Estimator:</em> The expected value of the sampling mean equals the population mean (\( E[\overline{X}] = \mu \)).<br>
+            - <em>Variance of the Sampling Mean:</em> The variance is given by \( \text{Var}(\overline{X}) = \frac{\sigma^2}{n} \), where \( \sigma^2 \) is the population variance and \( n \) is the sample size.<br>
+            - <em>Normal Distribution:</em> For large \( n \), the sampling distribution of the mean approaches a normal distribution due to the Central Limit Theorem, regardless of the population's distribution.
+        </p>
+        <h3>Sampling Variance (\( S^2 \)):</h3>
+        <p>
+            The sampling variance measures the variability within a sample.<br>
+            <strong>Properties:</strong><br>
+            - <em>Unbiased Estimator:</em> When calculated with the degrees of freedom correction (dividing by \( n - 1 \)), \( S^2 \) is an unbiased estimator of the population variance (\( E[S^2] = \sigma^2 \)).<br>
+            - <em>Distribution:</em> If the population is normally distributed, \( S^2 \) follows a chi-squared distribution with \( n - 1 \) degrees of freedom.<br>
+            - <em>Consistency:</em> As \( n \) increases, \( S^2 \) converges in probability to \( \sigma^2 \).
+        </p>
+        <h2>The Law of Large Numbers (LLN)</h2>
+        <p>
+            The Law of Large Numbers states that as the sample size \( n \) increases, the sample mean \( \overline{X} \) converges in probability towards the population mean \( \mu \).<br>
+            Mathematically, \( \lim_{n \to \infty} P\left( \left| \overline{X} - \mu \right| < \epsilon \right) = 1 \) for any \( \epsilon > 0 \).
+        </p>
+        <h3>Illustration:</h3>
+        <p>
+            - <em>Convergence of Averages:</em> Repeatedly drawing samples and computing their means will result in those means clustering around \( \mu \) as \( n \) grows.<br>
+            - <em>Reduction of Variability:</em> The standard deviation of the sampling mean decreases with larger \( n \), specifically \( \sigma_{\overline{X}} = \frac{\sigma}{\sqrt{n}} \).
+        </p>
+        <h2>Applications in Cybersecurity</h2>
+        <p>
+            The concepts of sampling mean and variance, along with the Law of Large Numbers, are crucial in various cybersecurity applications:
+        </p>
+        <h3>Anomaly Detection:</h3>
+        <p>
+            - By establishing baseline metrics (e.g., average number of login attempts per hour), security systems can detect anomalies when observed values significantly deviate from the expected mean.<br>
+            - LLN ensures that the calculated averages are reliable representations of normal behavior, improving the accuracy of intrusion detection systems.
+        </p>
+        <h3>Statistical Modeling of Network Traffic:</h3>
+        <p>
+            - Sampling techniques are used to model network traffic patterns and identify deviations caused by malicious activities like DDoS attacks.<br>
+            - Variance analysis helps in understanding the normal fluctuation of traffic and setting thresholds for alerts.
+        </p>
+        <h3>Cryptographic Applications:</h3>
+        <p>
+            - In cryptanalysis, statistical properties of ciphertexts (like mean and variance) are analyzed to detect weaknesses in encryption algorithms.<br>
+            - LLN supports the assumption that with enough data, small biases or patterns can be detected, aiding in breaking ciphers.
+        </p>
+        <h3>Risk Assessment:</h3>
+        <p>
+            - Estimating the likelihood of security breaches by analyzing historical incident data.<br>
+            - Sampling mean and variance provide estimates for the average frequency and variability of attacks, assisting in resource allocation for mitigation.
+        </p>
+    </div>
+    
+    
+</body>
+</html>
