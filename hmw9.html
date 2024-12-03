@@ -501,6 +501,8 @@
                 var samplingCounts = [];
                 var samplingData = {};
 
+                sampleVariances.sort();
+
                 // Determine the number of bins (optional, here we use unique values)
                 sampleVariances.forEach(function(variance) {
                     var key = variance.toFixed(2);
@@ -511,7 +513,6 @@
                     }
                 });
 
-                // Prepare labels and counts
                 for (var key in samplingData) {
                     samplingLabels.push(key);
                     samplingCounts.push(samplingData[key]);
