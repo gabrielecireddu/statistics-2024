@@ -9,6 +9,7 @@
     <!-- Includi la libreria Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* (Stili CSS rimangono gli stessi) */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -141,21 +142,26 @@
                 return parsedFunction.evaluate(scope);
             };
 
-            // Calcola l'integrale esatto numericamente
-            const exactIntegral = computeExactIntegral(f, a, b);
+            // Calcola l'integrale totale per normalizzare f(x) se necessario
+            const totalIntegral = computeExactIntegral(f, a, b);
 
-            // Calcola gli integrali
+            // Definisci la funzione densità di probabilità normalizzata
+            const pdf = function(x) {
+                return f(x) / totalIntegral;
+            };
+
+            // Calcola la media come E[X] = ∫ x * pdf(x) dx
+            const mean = computeExactIntegral(function(x) { return x * pdf(x); }, a, b);
+
+            // Calcola la varianza come Var(X) = ∫ (x - mean)^2 * pdf(x) dx
+            const variance = computeExactIntegral(function(x) { return Math.pow(x - mean, 2) * pdf(x); }, a, b);
+
+            // Calcola gli integrali di Riemann e Lebesgue della funzione originale
             const riemannIntegral = computeRiemannIntegral(f, a, b, n);
             const lebesgueIntegral = computeLebesgueIntegral(f, a, b, n);
 
-            // Calcola la media e la varianza
-            const mean = exactIntegral / (b - a);
-            const squaredFunction = function(x) { return Math.pow(f(x), 2); };
-            const exactIntegralSquared = computeExactIntegral(squaredFunction, a, b);
-            const variance = exactIntegralSquared / (b - a) - Math.pow(mean, 2);
-
             // Mostra i risultati
-            displayResults(riemannIntegral, lebesgueIntegral, exactIntegral, mean, variance);
+            displayResults(riemannIntegral, lebesgueIntegral, totalIntegral, mean, variance);
 
             // Disegna il grafico
             drawGraph(f, a, b);
@@ -221,7 +227,7 @@
         return sum;
     }
 
-    function displayResults(riemannIntegral, lebesgueIntegral, exactIntegral, mean, variance) {
+    function displayResults(riemannIntegral, lebesgueIntegral, totalIntegral, mean, variance) {
         let output = document.getElementById('output');
         output.innerHTML = `
             <table>
@@ -238,15 +244,15 @@
                     <td>${lebesgueIntegral.toPrecision(8)}</td>
                 </tr>
                 <tr>
-                    <td>Integrale Esatto</td>
-                    <td>${exactIntegral.toPrecision(8)}</td>
+                    <td>Integrale Totale \\( \\int_a^b f(x) \\, dx \\)</td>
+                    <td>${totalIntegral.toPrecision(8)}</td>
                 </tr>
                 <tr>
-                    <td>Media (Mean)</td>
+                    <td>Media \\( \\mu \\)</td>
                     <td>${mean.toPrecision(8)}</td>
                 </tr>
                 <tr>
-                    <td>Varianza (Variance)</td>
+                    <td>Varianza \\( \\sigma^2 \\)</td>
                     <td>${variance.toPrecision(8)}</td>
                 </tr>
             </table>
