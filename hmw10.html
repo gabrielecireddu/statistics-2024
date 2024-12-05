@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Calcolo di Integrali, Media e Varianza</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Includi la libreria math.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <!-- Includi la libreria Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        .input-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .input-group label {
+            flex: 1;
+            min-width: 150px;
+            font-weight: bold;
+        }
+        .input-group input {
+            flex: 2;
+            padding: 10px;
+            border: 1px solid #ccd1d9;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .input-group input[type="number"] {
+            max-width: 150px;
+        }
+        button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #output {
+            margin-top: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ccd1d9;
+            text-align: center;
+        }
+        th {
+            background-color: #ecf0f1;
+            font-weight: bold;
+        }
+        canvas {
+            max-width: 100%;
+            height: auto;
+            margin-top: 30px;
+        }
+        @media (max-width: 600px) {
+            .input-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .input-group label, .input-group input {
+                width: 100%;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Calcolo di Integrali, Media e Varianza</h1>
+    <div class="input-group">
+        <label for="functionInput">Funzione \( f(x) \):</label>
+        <input type="text" id="functionInput" value="x^2">
+    </div>
+    <div class="input-group">
+        <label for="interval">Intervallo [a, b]:</label>
+        <input type="text" id="interval" value="0,1">
+    </div>
+    <div class="input-group">
+        <label for="partitions">Numero di partizioni \( n \):</label>
+        <input type="number" id="partitions" value="1000">
+    </div>
+    <button onclick="computeIntegrals()">Calcola</button>
+
+    <div id="output"></div>
+    <canvas id="functionChart"></canvas>
+</div>
+
+<script>
+    let parsedFunction;
+    let chart;
+
+    function computeIntegrals() {
+        // Ottieni gli input dell'utente
+        const functionInput = document.getElementById('functionInput').value;
+        const intervalInput = document.getElementById('interval').value;
+        const n = parseInt(document.getElementById('partitions').value);
+
+        // Analizza l'intervallo
+        const [a, b] = intervalInput.split(',').map(Number);
+
+        // Analizza la funzione in modo sicuro utilizzando math.js
+        try {
+            parsedFunction = math.parse(functionInput);
+            const f = function(x) {
+                const scope = { x: x };
+                return parsedFunction.evaluate(scope);
+            };
+
+            // Calcola l'integrale esatto numericamente
+            const exactIntegral = computeExactIntegral(f, a, b);
+
+            // Calcola gli integrali
+            const riemannIntegral = computeRiemannIntegral(f, a, b, n);
+            const lebesgueIntegral = computeLebesgueIntegral(f, a, b, n);
+
+            // Calcola la media e la varianza
+            const mean = exactIntegral / (b - a);
+            const squaredFunction = function(x) { return Math.pow(f(x), 2); };
+            const exactIntegralSquared = computeExactIntegral(squaredFunction, a, b);
+            const variance = exactIntegralSquared / (b - a) - Math.pow(mean, 2);
+
+            // Mostra i risultati
+            displayResults(riemannIntegral, lebesgueIntegral, exactIntegral, mean, variance);
+
+            // Disegna il grafico
+            drawGraph(f, a, b);
+        } catch (error) {
+            alert('Errore nel parsing della funzione. Inserisci un\'espressione matematica valida.');
+            console.error(error);
+        }
+    }
+
+    function computeRiemannIntegral(f, a, b, n) {
+        let sum = 0;
+        let dx = (b - a) / n;
+        for (let i = 0; i < n; i++) {
+            let x = a + i * dx + dx / 2; // Punto medio
+            sum += f(x) * dx;
+        }
+        return sum;
+    }
+
+    function computeLebesgueIntegral(f, a, b, n) {
+        // Partiziona l'intervallo dei valori di f(x) in n livelli
+        let yMin = Infinity, yMax = -Infinity;
+        const numSamples = n * 10;
+        for (let i = 0; i <= numSamples; i++) {
+            let x = a + (b - a) * i / numSamples;
+            let y = f(x);
+            if (y < yMin) yMin = y;
+            if (y > yMax) yMax = y;
+        }
+        let dy = (yMax - yMin) / n;
+        let sum = 0;
+        for (let i = 0; i < n; i++) {
+            let y = yMin + i * dy;
+            // Misura del preimmagine: lunghezza degli x tali che f(x) ∈ [y, y + dy)
+            let measure = estimatePreimageMeasure(f, y, y + dy, a, b, n);
+            sum += y * measure;
+        }
+        return sum;
+    }
+
+    function estimatePreimageMeasure(f, y1, y2, a, b, n) {
+        // Stima della misura degli x tali che f(x) ∈ [y1, y2)
+        let dx = (b - a) / n;
+        let measure = 0;
+        for (let i = 0; i < n; i++) {
+            let x = a + i * dx + dx / 2;
+            let fx = f(x);
+            if (fx >= y1 && fx < y2) {
+                measure += dx;
+            }
+        }
+        return measure;
+    }
+
+    function computeExactIntegral(f, a, b) {
+        const n = 1000000; // Numero elevato di partizioni per alta precisione
+        let sum = 0;
+        const dx = (b - a) / n;
+        for (let i = 0; i < n; i++) {
+            const x = a + i * dx + dx / 2;
+            sum += f(x) * dx;
+        }
+        return sum;
+    }
+
+    function displayResults(riemannIntegral, lebesgueIntegral, exactIntegral, mean, variance) {
+        let output = document.getElementById('output');
+        output.innerHTML = `
+            <table>
+                <tr>
+                    <th>Calcolo</th>
+                    <th>Valore</th>
+                </tr>
+                <tr>
+                    <td>Integrale di Riemann</td>
+                    <td>${riemannIntegral.toPrecision(8)}</td>
+                </tr>
+                <tr>
+                    <td>Integrale di Lebesgue</td>
+                    <td>${lebesgueIntegral.toPrecision(8)}</td>
+                </tr>
+                <tr>
+                    <td>Integrale Esatto</td>
+                    <td>${exactIntegral.toPrecision(8)}</td>
+                </tr>
+                <tr>
+                    <td>Media (Mean)</td>
+                    <td>${mean.toPrecision(8)}</td>
+                </tr>
+                <tr>
+                    <td>Varianza (Variance)</td>
+                    <td>${variance.toPrecision(8)}</td>
+                </tr>
+            </table>
+        `;
+    }
+
+    function drawGraph(f, a, b) {
+        const numPoints = 1000;
+        let xValues = [];
+        let yValues = [];
+        for (let i = 0; i <= numPoints; i++) {
+            let x = a + (b - a) * i / numPoints;
+            xValues.push(x);
+            yValues.push(f(x));
+        }
+
+        // Se esiste già un grafico, distruggilo
+        if (chart) {
+            chart.destroy();
+        }
+
+        // Crea un nuovo grafico
+        const ctx = document.getElementById('functionChart').getContext('2d');
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: xValues,
+                datasets: [{
+                    label: 'f(x)',
+                    data: yValues,
+                    borderColor: '#3498db',
+                    borderWidth: 2,
+                    fill: false,
+                    pointRadius: 0,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    tooltip: {
+                        enabled: true,
+                        callbacks: {
+                            label: function(context) {
+                                let x = context.parsed.x;
+                                let y = context.parsed.y;
+                                return `f(${x.toFixed(4)}) = ${y.toFixed(4)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'x'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'f(x)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

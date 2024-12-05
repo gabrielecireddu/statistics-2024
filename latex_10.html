@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Sampling Mean, Variance, and Lebesgue–Stieltjes Integration</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            margin: 0;
+        }
+        h1, h2 {
+            font-size: 24px;
+        }
+        h3 {
+            font-size: 20px;
+        }
+        p {
+            font-size: 16px;
+        }
+        .math-container {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        /* Responsive resizing for formulas */
+        @media (max-width: 1200px) {
+            p {
+            font-size: 12px;
+        }
+        }
+        @media (max-width: 880px) {
+            p {
+            font-size: 10px;
+        }
+        }
+        @media (max-width: 740px) {
+            p {
+            font-size: 8px;
+        }
+        }
+        @media (max-width: 600px) {
+            p {
+            font-size: 6px;
+        }
+        }
+        @media (max-width: 500px) {
+            p {
+            font-size: 5px;
+        }
+        }
+        @media (max-width: 450px) {
+            p {
+            font-size: 4px;
+        }
+        }
+        @media (max-width: 380px) {
+            p {
+            font-size: 3px;
+        }
+        }
+        @media (max-width: 290px) {
+            p {
+            font-size: 2px;
+        }
+        }
+        @media (max-width: 240px) {
+            p {
+            font-size: 1px;
+        }
+        }
+    </style>
+</head>
+<body>
+    <div class="math-container">
+        <h2>Introduction</h2>
+        <p>
+            Understanding how data behaves is essential in fields ranging from statistics to physics. Two fundamental concepts in statistics are the sampling mean and variance, which provide insights into the central tendency and dispersion of data. Additionally, the Lebesgue–Stieltjes integration offers a powerful tool in measure theory and probability, allowing for a unified approach to integration that encompasses both discrete and continuous cases.
+        </p>
+    </div>
+
+    <div class="math-container">
+        <h2>Sampling Mean and Variance</h2>
+        <h3>What is the Sampling Mean?</h3>
+        <p>
+            The <strong>sampling mean</strong> is the average of a set of observations drawn from a larger population. It serves as an estimate of the population mean (\( \mu \)). If we have a sample \( \{X_1, X_2, \dots, X_n\} \), the sampling mean (\( \overline{X} \)) is calculated as:
+        </p>
+        <p>
+            \[
+            \overline{X} = \frac{1}{n} \sum_{i=1}^{n} X_i
+            \]
+        </p>
+        <p>
+            This simple formula provides a powerful summary of the data, capturing the central value around which individual observations cluster.
+        </p>
+
+        <h3>What is the Sampling Variance?</h3>
+        <p>
+            The <strong>sampling variance</strong> measures how much the observations in a sample vary around the sampling mean. It estimates the population variance (\( \sigma^2 \)). The unbiased estimator for the variance is:
+        </p>
+        <p>
+            \[
+            S^2 = \frac{1}{n - 1} \sum_{i=1}^{n} (X_i - \overline{X})^2
+            \]
+        </p>
+        <p>
+            The variance provides insight into the data's spread, indicating whether the observations are tightly clustered or widely dispersed.
+        </p>
+
+        <h3>Main Features of Their Distributions</h3>
+        <p>
+            Both the sampling mean and variance have their own distributions, especially when considering all possible samples from the population.
+
+            <strong>Sampling Mean Distribution:</strong>
+            <ul>
+                <li><em>Expectation:</em> \( E[\overline{X}] = \mu \). The sampling mean is an unbiased estimator of the population mean.</li>
+                <li><em>Variance:</em> \( \text{Var}(\overline{X}) = \frac{\sigma^2}{n} \). The variance decreases as the sample size increases, meaning larger samples provide more precise estimates.</li>
+                <li><em>Distribution Shape:</em> According to the Central Limit Theorem, the distribution of \( \overline{X} \) approaches a normal distribution as \( n \) becomes large, regardless of the population's original distribution.</li>
+            </ul>
+
+            <strong>Sampling Variance Distribution:</strong>
+            <ul>
+                <li><em>Expectation:</em> \( E[S^2] = \sigma^2 \). The sampling variance is an unbiased estimator of the population variance.</li>
+                <li><em>Distribution Shape:</em> If the population is normally distributed, \( (n-1)S^2/\sigma^2 \) follows a chi-squared distribution with \( n - 1 \) degrees of freedom.</li>
+            </ul>
+        </p>
+    </div>
+
+    <div class="math-container">
+        <h2>Lebesgue–Stieltjes Integration</h2>
+        <h3>What is Lebesgue–Stieltjes Integration?</h3>
+        <p>
+            The Lebesgue–Stieltjes integral extends the concept of integration beyond traditional Riemann integration, accommodating a wider class of functions and measures. It integrates a function with respect to another function (often a cumulative distribution function), allowing for the inclusion of discontinuities and singularities.
+        </p>
+        <p>
+            Formally, for a function \( f \) and an increasing function \( F \), the Lebesgue–Stieltjes integral is denoted as:
+        </p>
+        <p>
+            \[
+            \int_a^b f(x) \, dF(x)
+            \]
+        </p>
+        <p>
+            This integral sums the values of \( f(x) \) weighted by the increments of \( F(x) \), seamlessly combining discrete and continuous scenarios.
+        </p>
+
+        <h3>Applications in Probability Theory</h3>
+        <p>
+            In probability, the Lebesgue–Stieltjes integral allows us to compute expectations and probabilities for both discrete and continuous random variables using a unified approach.
+
+            <strong>Expected Value:</strong>
+            \[
+            E[X] = \int_{-\infty}^\infty x \, dF(x)
+            \]
+            where \( F(x) \) is the cumulative distribution function (CDF) of the random variable \( X \).
+
+            <strong>Probability Calculations:</strong>
+            \[
+            P(a < X \leq b) = \int_a^b dF(x) = F(b) - F(a)
+            \]
+            This holds true regardless of whether \( X \) is discrete or continuous.
+        </p>
+
+        <h3>Applications in Measure Theory</h3>
+        <p>
+            Measure theory provides the foundation for modern probability and integration. The Lebesgue–Stieltjes integral is essential in defining measures based on distribution functions.
+
+            <strong>Defining Measures:</strong>
+            A measure \( \mu \) can be defined via a right-continuous, non-decreasing function \( F \) such that:
+            \[
+            \mu((a, b]) = F(b) - F(a)
+            \]
+            The Lebesgue–Stieltjes integral then integrates functions with respect to this measure \( \mu \).
+
+            <strong>Unifying Discrete and Continuous Cases:</strong>
+            This integration method handles sums and integrals in a single framework, which is particularly useful when dealing with mixed random variables.
+        </p>
+    </div>
+
+    <div class="math-container">
+        <h2>Bringing It All Together</h2>
+        <p>
+            The concepts of sampling mean and variance are cornerstones in statistics, providing essential tools for data analysis and inference. By understanding their distributions, we gain insights into the reliability and precision of our estimations.
+
+            The Lebesgue–Stieltjes integral enriches this understanding by offering a versatile integration method that aligns seamlessly with the probabilistic concepts. It bridges the gap between discrete and continuous analyses, enabling comprehensive probability calculations and measure definitions.
+
+            Together, these concepts form a robust framework that supports advanced statistical methods, probability theory, and measure theory, allowing us to model and interpret complex real-world phenomena with greater accuracy.
+        </p>
+    </div>
+
+    <div class="math-container">
+        <h2>Conclusion</h2>
+        <p>
+            Grasping the general concepts of sampling mean and variance, along with their distributions, equips us with the tools to make informed inferences from data. The Lebesgue–Stieltjes integration further enhances our analytical capabilities by providing a unified approach to integration in probability and measure theory.
+
+            Whether you're analyzing statistical data, delving into advanced probability, or exploring the depths of measure theory, these concepts are invaluable. They not only deepen our theoretical understanding but also have practical implications across various scientific and engineering disciplines.
+        </p>
+        <p>
+            As you continue to explore these topics, remember that mathematics is not just about numbers and equations—it's a language that helps us describe and make sense of the world around us.
+        </p>
+    </div>
+</body>
+</html>
